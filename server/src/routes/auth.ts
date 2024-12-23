@@ -7,10 +7,23 @@ const router = Router();
 router.post(
   "/login",
   // Using local strategy to redirect back to the signin page if there is an error
-  passport.authenticate("local"),
-  (req: any, res: Response) => {
-    console.log("req.sessionID: ", req.sessionID);
-    res.status(200).json({ user: req.user });
+  function (req, res, next) {
+    passport.authenticate("local", { session: false }, function (err: any, user: any, info: any) {
+      if (err) {
+        return next(err);
+      }
+
+      if (!user) {
+        return res.status(401).send(info);
+      }
+
+      req.logIn(user, function (err: any) {
+        if (err) {
+          return next(err);
+        }
+        return res.status(200).send(user);
+      });
+    })(req, res, next);
   }
 );
 
@@ -24,18 +37,13 @@ router.get("/status", (req: any, res: Response) => {
   });
 });
 
-router.get("/logout", (req: any, res: Response) => {
+router.post("/logout", (req: any, res: Response) => {
   req.session.destroy((err: any) => {
     if (err) {
       console.log(err);
     }
     res.status(200).json({
-      user: {
-        accessId: 0,
-        type: "visitor",
-        _id: 0,
-        username: "",
-      },
+      user: null,
     });
   });
   req.logout();

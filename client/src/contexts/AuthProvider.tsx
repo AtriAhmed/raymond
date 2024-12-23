@@ -43,8 +43,12 @@ function AuthProvider({ children }: AuthProviderProps) {
   }
 
   async function logout() {
-    await axios.post("/auth/logout");
-    setUser(null);
+    try {
+      await axios.post("/auth/logout");
+      setUser(null);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   useEffect(() => {

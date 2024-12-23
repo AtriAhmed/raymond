@@ -8,16 +8,27 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as z from "zod";
 
-const schema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-});
+const schema = z
+  .object({
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string().min(6, "Confirm Password must be at least 6 characters"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 interface FormValues extends z.infer<typeof schema> {
   apiError?: string;
 }
 
-export default function LoginForm() {
+type RegisterFormProps = {
+  verificationToken: string | null;
+  setVerificationToken: (token: string) => void;
+};
+
+export default function RegisterForm({ verificationToken, setVerificationToken }: RegisterFormProps) {
   const navigate = useNavigate();
   const { fetchUser } = useAuthContext();
 
@@ -33,12 +44,10 @@ export default function LoginForm() {
 
   async function onSubmit(data: any) {
     try {
-      const res = await axios.post("/auth/login", data);
+      const res = await axios.post("/users", data);
 
-      fetchUser();
+      setVerificationToken(res.data.data.attributes.token);
     } catch (err: any) {
-      console.log("-------------------- err.response?.data --------------------");
-      console.log(err.response?.data);
       const msg = err.response?.data?.errors?.[0]?.detail;
       console.log(err);
       if (msg === "EmailAlreadyExists") {
@@ -90,6 +99,19 @@ export default function LoginForm() {
         </div>
         {errors.password?.message && <p className="mt-1 text-red-500">{errors.password?.message}</p>}
       </div>
+      <div className="mt-2">
+        <label className="flex items-center gap-2 text-sm text-[#8a21ed] font-medium" htmlFor="confirmPassword">
+          Confirm Password
+        </label>
+        <input
+          {...register("confirmPassword")}
+          id="confirmPassword"
+          placeholder="Enter Password"
+          type={showPassword ? "text" : "password"}
+          className="w-full mt-1 px-4 py-2 text-sm border rounded-lg shadow-sm focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none border-gray-300 duration-200"
+        />
+        {errors.confirmPassword?.message && <p className="mt-1 text-red-500">{errors.confirmPassword?.message}</p>}
+      </div>
       <button
         disabled={isSubmitting}
         type="submit"
@@ -99,7 +121,7 @@ export default function LoginForm() {
           <RingLoader className=" !size-4 !border-[2px]" />
         ) : (
           <>
-            <span>Login</span>
+            <span>Register</span>
             <LoginIcon className="size-3.5" />
           </>
         )}

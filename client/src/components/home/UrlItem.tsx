@@ -1,4 +1,5 @@
 import CustomToast from "@/components/CustomToast";
+import { useAuthContext } from "@/contexts/AuthProvider";
 import { Url } from "@/types";
 import { ArrowTopRightOnSquareIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/16/solid";
 import { ClipboardIcon } from "@heroicons/react/24/outline";
@@ -6,10 +7,24 @@ import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
 export default function UrlItem({ url }: { url: Url }) {
+  const { user } = useAuthContext();
+
   async function handleCopy() {
     if (url.shortenedUrl) {
       await navigator.clipboard.writeText(url.shortenedUrl);
       toast.custom((t) => <CustomToast t={t} message={"URL copied to clipboard"} />);
+    }
+  }
+
+  async function handleEdit() {
+    if (!user) {
+      return toast.custom((t) => <CustomToast t={t} type="warning" message={"Log in to edit your URLs"} />);
+    }
+  }
+
+  async function handleDelete() {
+    if (!user) {
+      return toast.custom((t) => <CustomToast t={t} type="warning" message={"Log in to edit your URLs"} />);
     }
   }
 
@@ -37,11 +52,11 @@ export default function UrlItem({ url }: { url: Url }) {
           <ClipboardIcon className="size-4" />
           <p className="text-xs">Copy</p>
         </button>
-        <button className="flex gap-1 ml-auto px-2 py-1 rounded bg-purple hover:bg-purple-dark text-white duration-200">
+        <button onClick={handleEdit} className="flex gap-1 ml-auto px-2 py-1 rounded bg-purple hover:bg-purple-dark text-white duration-200">
           <PencilSquareIcon className="size-4" />
           <p className="text-xs">Edit</p>
         </button>
-        <button className="flex gap-1 px-2 py-1 rounded bg-red-500 hover:bg-red-600 text-white duration-200">
+        <button onClick={handleDelete} className="flex gap-1 px-2 py-1 rounded bg-red-500 hover:bg-red-600 text-white duration-200">
           <TrashIcon className="size-4" />
           <p className="text-xs">Delete</p>
         </button>

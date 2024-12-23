@@ -73,12 +73,12 @@ export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
     }
   };
 
-  const handleCopy = async () => {
+  async function handleCopy() {
     if (shortenedUrl) {
       await navigator.clipboard.writeText(shortenedUrl);
       toast.custom((t) => <CustomToast t={t} message={"URL copied to clipboard"} />);
     }
-  };
+  }
 
   if (shortenedUrl) {
     return (

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import userController from "../controllers/users";
+import userController, * as usersController from "../controllers/users";
 
 const router = Router();
 
@@ -9,7 +9,9 @@ router
   // GET "/api/user"
   .get(userController.getAllUsers) // Gets all the users
   // POST "/api/user" Example Request: { "vals": ["test_user", "111111", 1] }
-  .post(userController.createNewUser); // create a new user
+  .post(usersController.create); // create a new user
+
+router.route("/verify").put(usersController.verify);
 
 // Matches with "/api/user/:id"
 router

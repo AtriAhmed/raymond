@@ -16,9 +16,9 @@ export default function Sidebar({ urls }: SidebarProps) {
     <>
       {/*  ---------------------------- Desktop Sidebar ---------------------------- */}
       {/*  ---------------------------- Desktop Sidebar ---------------------------- */}
-      <div className="shrink-0 overflow-hidden">
+      <div className="sticky top-[55px] self-start shrink-0 overflow-hidden">
         <div
-          className={`self-start sticky top-[65px] h-[calc(100vh-55px)] w-[350px] bg-white hidden md:block overflow-hidden border border-slate-200 duration-200 ${
+          className={` h-[calc(100vh-55px)] w-[350px] bg-white hidden md:block overflow-hidden border border-slate-200 duration-200 ${
             urls?.length ? "" : "mr-[-350px]"
           }`}
         >

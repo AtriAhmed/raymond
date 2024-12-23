@@ -5,7 +5,7 @@ import { CheckCircleIcon, ExclamationCircleIcon, InformationCircleIcon } from "@
 type CustomToastProps = {
   t: any;
   message: string;
-  type?: "success" | "error" | "info";
+  type?: "success" | "error" | "info" | "warning";
 };
 
 export default function CustomToast({ t, message, type = "success" }: CustomToastProps) {
@@ -13,12 +13,14 @@ export default function CustomToast({ t, message, type = "success" }: CustomToas
     success: <CheckCircleIcon className="size-8 text-white" />,
     error: <ExclamationCircleIcon className="size-8 text-white" />,
     info: <InformationCircleIcon className="size-8 text-white" />,
+    warning: <ExclamationCircleIcon className="size-8 text-white" />,
   };
 
   const colors = {
     success: "bg-green-500 ring-green-600",
     error: "bg-red-500 ring-red-600",
     info: "bg-blue-500 ring-blue-600",
+    warning: "bg-yellow-500 ring-yellow-600",
   };
 
   return (

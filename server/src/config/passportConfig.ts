@@ -1,10 +1,7 @@
 const User = require("../models/User");
 const userController = require("../controllers/users");
 const bcrypt = require("bcrypt");
-const AccessLevel = require("../models/AccessLevel");
 const LocalStrategy = require("passport-local").Strategy;
-
-const { getUserByUsernameWithPassword } = userController.default;
 
 module.exports = (passport: any) => {
   //  ======================== Passport Session Setup ============================
@@ -16,73 +13,78 @@ module.exports = (passport: any) => {
 
   // used to deserialize the user
 
-  passport.deserializeUser((id: any, done: any) => {
-    User.findByPk(id, {
-      include: [
-        {
-          model: AccessLevel,
-          attributes: ["type"],
-        },
-      ],
-    })
-      .then((user: any) => {
-        done(null, user);
-      })
-      .catch((err: any) => {
-        done(err, null);
-      });
+  passport.deserializeUser(async (id: any, done: any) => {
+    const user = await User.findById(id);
+
+    if (user) {
+      done(null, user.toJSON());
+    } else {
+      done(null, false);
+    }
   });
 
   passport.use(
     new LocalStrategy(
       { usernameField: "email", passwordField: "password", passReqToCallback: true },
-      (req: any, username: string, password: string, done: any) => {
-        if (!req.user && (!(username === "") || password.length >= 5)) {
-          // callback with username and password from client must match basic requirements before even being compared in DB
-
-          // console.log('attempting to get user from DB')
-          getUserByUsernameWithPassword(username, (err: any, user: any) => {
-            if (err) {
-              // console.log('Error occured getting user from DB to compare against Posted user INFO')
-
-              // if err return err
-
-              return done(err);
-            } else if (!user) {
-              // console.log(`No user found Returning from local-strategy login failed to login ${username}`)
-
-              return done(null, false);
-            } else {
-              // console.log(`In local Strategy & Found ${username} from database comparing password..`)
-
-              // if user found, compare password against db password and return true or false if it matches
-
-              // console.log(user)
-
-              bcrypt.compare(password, user.password, (err: any, result: any) => {
-                if (err) {
-                  // console.log('error in bcrypt compare')
-
-                  done(err);
-                } else if (result) {
-                  // console.log(`Successful login for User: ${user.username} ID: ${user.userId} Type:${user.type} type-ID:${user.accessId} removing pw from userObj and attaching to future requests`)
-
-                  delete user.password;
-                  done(null, user);
-                } else {
-                  // console.log('Passwords did not match. Failed log in')
-
-                  done(null, false);
-                }
-              });
-            }
-          });
-        } else if (req.user) {
-          // console.log('User attempted to log in while already logged in.')
+      async (req: any, username: string, password: string, done: any) => {
+        if (req.user) {
           done(null, req.user);
-        } else {
-          // console.log('Login attempt did not meet username and password requirements.')
-          return done(null, false);
+          return;
+        }
+
+        try {
+          const user = await User.findOne({ email: { $regex: new RegExp("^" + username + "$", "i") } });
+
+          console.log("from local", user);
+
+          if (!user) {
+            done(null, false, {
+              errors: [
+                {
+                  status: "404",
+                  title: "User Not Found",
+                  detail: "User not found.",
+                },
+              ],
+            });
+            return;
+          }
+
+          const match = await bcrypt.compare(password, user.password);
+          if (match) {
+            if (!user.active) {
+              done(null, false, {
+                errors: [
+                  {
+                    status: "404",
+                    title: "Suspended",
+                    detail: "User account is suspended.",
+                  },
+                ],
+              });
+              return;
+            }
+            delete user.password;
+
+            console.log(user);
+
+            done(null, user);
+            return;
+          } else {
+            done(null, false, {
+              errors: [
+                {
+                  status: "401",
+                  title: "Invalid Credentials",
+                  detail: "Invalid credentials.",
+                },
+              ],
+            });
+            return;
+          }
+        } catch (err) {
+          done(err);
+          return;
         }
       }
     )

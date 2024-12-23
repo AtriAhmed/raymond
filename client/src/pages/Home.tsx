@@ -39,7 +39,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-[calc(100vh-55px)]">
       <div className="grow flex items-center justify-center overflow-x-hidden w-full">
         <ShortenerForm fetchUrls={fetchUrls} />
       </div>

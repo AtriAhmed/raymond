@@ -98,7 +98,7 @@ function Navbar() {
             <Dropdown items={dropdownItems} position="right" renderItem={(item) => item}>
               {(isOpen) => (
                 <div className={`relative`}>
-                  <div className="relative w-10 aspect-square rounded-full border border-green-600 overflow-hidden">
+                  <div className="relative w-10 aspect-square rounded-full border border-purple overflow-hidden">
                     <img src={`${import.meta.env.VITE_API_URL}${user?.picture}` || ""} alt="" className="absolute inset-0 object-cover" />
                   </div>
                   {/* {user?.username} */}

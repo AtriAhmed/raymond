@@ -7,38 +7,48 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as z from "zod";
+import OtpInput from "react-otp-input";
 
 const schema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  otp: z.string().min(6, "Confirm Password must be at least 6 characters"),
 });
 
 interface FormValues extends z.infer<typeof schema> {
   apiError?: string;
 }
 
-export default function LoginForm() {
+type AccountVerificationFormProps = {
+  verificationToken: string | null;
+  setVerificationToken: (token: string) => void;
+};
+
+export default function AccountVerificationForm({ verificationToken, setVerificationToken }: AccountVerificationFormProps) {
   const navigate = useNavigate();
   const { fetchUser } = useAuthContext();
 
   const {
-    register,
     handleSubmit,
     setError,
+    watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
   });
-  const [showPassword, setShowPassword] = useState(false);
 
-  async function onSubmit(data: any) {
+  const otp = watch("otp");
+
+  async function onSubmit(data: FormValues) {
+    const payload = {
+      otp: data.otp,
+      token: verificationToken,
+    };
+
     try {
-      const res = await axios.post("/auth/login", data);
+      const res = await axios.put("/users/verify", payload);
 
       fetchUser();
     } catch (err: any) {
-      console.log("-------------------- err.response?.data --------------------");
-      console.log(err.response?.data);
       const msg = err.response?.data?.errors?.[0]?.detail;
       console.log(err);
       if (msg === "EmailAlreadyExists") {
@@ -54,41 +64,23 @@ export default function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="px-6 text-sm">
+      <p className="text-slate-700 text-sm text-center">We have sent you a code via email</p>
       <div className="">
-        <label className="flex items-center gap-2 text-sm text-[#8a21ed] font-medium" htmlFor="email">
-          Email
-        </label>
-        <input
-          {...register("email")}
-          id="email"
-          placeholder="Enter Email"
-          className="w-full mt-1 px-4 py-2 text-sm border rounded-lg shadow-sm focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none border-gray-300 duration-200"
-        />
-        {errors.email?.message && <p className="mt-1 text-red-500">{errors.email?.message}</p>}
-      </div>
-      <div className="mt-2">
-        <label className="flex items-center gap-2 text-sm text-[#8a21ed] font-medium" htmlFor="password">
-          Password
-        </label>
-        <div className="relative">
-          <input
-            {...register("password")}
-            id="password"
-            placeholder="Enter Password"
-            type={showPassword ? "text" : "password"}
-            className="w-full mt-1 px-4 py-2 text-sm border rounded-lg shadow-sm focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none border-gray-300 duration-200"
-          />
-          <button
-            type="button"
-            onClick={() => {
-              setShowPassword((prev) => !prev);
+        <label className="flex items-center gap-2 text-sm text-[#8a21ed] font-medium" htmlFor="otp"></label>
+
+        <div className="w-fit mx-auto mt-2 focus:[&_input]:ring-1 [&_input]:ring-offset-1 [&_input]:ring-purple-700 focus:[&_input]:outline-none [&_input]:duration-200">
+          <OtpInput
+            value={otp}
+            onChange={(value) => {
+              setValue("otp", value);
             }}
-            className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
-          >
-            {showPassword ? <EyeSlashIcon className="size-5" /> : <EyeIcon className="size-5" />}
-          </button>
+            numInputs={6}
+            renderSeparator={<span>-</span>}
+            renderInput={(props) => <input {...props} />}
+            inputStyle={{ width: "40px", height: "40px", border: "1px solid #ddd", borderRadius: "5px", margin: "0 5px" }}
+          />
         </div>
-        {errors.password?.message && <p className="mt-1 text-red-500">{errors.password?.message}</p>}
+        {errors.otp?.message && <p className="mt-1 text-red-500">{errors.otp?.message}</p>}
       </div>
       <button
         disabled={isSubmitting}
@@ -99,7 +91,7 @@ export default function LoginForm() {
           <RingLoader className=" !size-4 !border-[2px]" />
         ) : (
           <>
-            <span>Login</span>
+            <span>Verify</span>
             <LoginIcon className="size-3.5" />
           </>
         )}

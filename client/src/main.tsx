@@ -7,6 +7,8 @@ import Login from "@/pages/Login";
 import axios from "axios";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import Register from "@/pages/Register";
+import AuthLayout from "@/layouts/AuthLayout";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -36,11 +38,15 @@ const router = createBrowserRouter([
       },
       {
         path: "auth",
-        // element: <ChatLayout />,
+        element: <AuthLayout />,
         children: [
           {
             path: "login",
             element: <Login />,
+          },
+          {
+            path: "register",
+            element: <Register />,
           },
         ],
       },
