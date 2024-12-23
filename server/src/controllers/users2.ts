@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import mongoose from "mongoose";
+import { accessIdSupOrEqualTo } from "../middlewares/accessIdSupOrEqTo";
 
 const User = require("../models/User");
 const AccessLevel = require("../models/AccessLevel");
@@ -10,6 +10,7 @@ const nodemailer = require("nodemailer");
 const saltRounds = 10;
 
 const { check, body, validationResult } = require("express-validator");
+const { Op } = require("sequelize");
 
 function removeSpaces(req: any, res: Response, next: NextFunction) {
   if (req.files?.image) {
@@ -21,7 +22,55 @@ function removeSpaces(req: any, res: Response, next: NextFunction) {
 export default {
   createNewUser: [
     removeSpaces,
-    // accessIdSupOrEqualTo(3),
+    accessIdSupOrEqualTo(3),
+    body("firstname")
+      .notEmpty()
+      .withMessage("Le champ Prénom est requis.")
+      .isLength({ max: 50 })
+      .withMessage("Le Prénom doit comporter au maximum 50 caractères."),
+    body("lastname").notEmpty().withMessage("Le champ Nom est requis.").isLength({ max: 50 }).withMessage("Le Nom doit comporter au maximum 50 caractères."),
+    body("email")
+      .notEmpty()
+      .withMessage("Le champ Email est requis.")
+      .isEmail()
+      .withMessage("Le format de l'email est incorrect.")
+      .isLength({ max: 50 })
+      .withMessage("L'email doit comporter au maximum 50 caractères."),
+    body("password")
+      .notEmpty()
+      .withMessage("Le champ Mot de passe est requis.")
+      .isLength({ min: 4, max: 50 })
+      .withMessage("Le Mot de passe doit comporter entre 4 et 50 caractères."),
+    body("accessId")
+      .notEmpty()
+      .withMessage("Le champ Niveau d'accès est requis.")
+      .isNumeric()
+      .withMessage("Le Niveau d'accès doit être un nombre.")
+      .isLength({ min: 1, max: 1 })
+      .withMessage("Le Niveau d'accès doit comporter 1 seul caractères."),
+    body("position")
+      .notEmpty()
+      .withMessage("Le champ Poste est requis.")
+      .isLength({ max: 192 })
+      .withMessage("Le Poste doit comporter au maximum 192 caractères."),
+    body("startDate").notEmpty().withMessage("Le champ Date de début est requis.").isDate().withMessage("Le format de la date est incorrect."),
+    body("contractType")
+      .notEmpty()
+      .withMessage("Le champ Type de contrat est requis.")
+      .isLength({ max: 192 })
+      .withMessage("Le Type de contrat doit comporter au maximum 192 caractères."),
+    body("salary")
+      .notEmpty()
+      .withMessage("Le champ Salaire est requis.")
+      .isNumeric()
+      .withMessage("Le Salaire doit être un nombre.")
+      .isLength({ max: 50 })
+      .withMessage("Le Salaire doit comporter au maximum 50 caractères."),
+    body("phone")
+      .notEmpty()
+      .withMessage("Le champ Téléphone est requis.")
+      .isLength({ min: 8, max: 8 })
+      .withMessage("Le Téléphone doit comporter 8 caractères."),
     async (req: any, res: Response) => {
       const errors = validationResult(req);
       const errorMessages = errors.array().reduce((accumulator: any, error: any) => {
@@ -51,7 +100,7 @@ export default {
         };
 
         const result = await User.create(user);
-        res.status(200).json({ id: result._id });
+        res.status(200).json({ id: result.id });
       } catch (error) {
         console.error(error);
         res.status(500).json({ error });
@@ -60,7 +109,7 @@ export default {
   ],
   updateUserById: [
     removeSpaces,
-    // accessIdSupOrEqualTo(3),
+    accessIdSupOrEqualTo(3),
     body("firstname")
       .notEmpty()
       .withMessage("Le champ Prénom est requis.")
@@ -114,10 +163,14 @@ export default {
         return res.status(400).json({ errors: errorMessages });
       }
 
-      const oldUser = await User.findById(req.params.id);
-      if (!oldUser) {
-        return res.status(404).end();
-      }
+      let oldUser: any = {};
+      User.findByPk(req.params.id)
+        .then((olduser: any) => {
+          oldUser = olduser;
+        })
+        .catch((err: any) => {
+          res.status(404).end();
+        });
 
       const body = req.body;
 
@@ -141,8 +194,10 @@ export default {
       }
 
       try {
-        const result = await User.findByIdAndUpdate(req.params.id, userData, { new: true });
-        if (!result) {
+        const result = await User.update(userData, {
+          where: { _id: req.params.id },
+        });
+        if (result[0] === 0) {
           res.status(204).end();
         } else {
           res.status(200).end();
@@ -154,7 +209,7 @@ export default {
     },
   ],
   getAllUsers: [
-    // accessIdSupOrEqualTo(3),
+    accessIdSupOrEqualTo(3),
     async (req: Request, res: Response) => {
       try {
         const { keyword } = req.query;
@@ -162,17 +217,15 @@ export default {
         const where: any = {};
 
         if (keyword) {
-          where.$or = [
+          where[Op.or] = [
             {
               firstname: {
-                $regex: keyword,
-                $options: "i",
+                [Op.like]: `%${keyword}%`,
               },
             },
             {
               lastname: {
-                $regex: keyword,
-                $options: "i",
+                [Op.like]: `%${keyword}%`,
               },
             },
           ];
@@ -181,20 +234,26 @@ export default {
         const { page = 1, pageSize = 10 } = req.query;
         const offset = (Number(page) - 1) * Number(pageSize);
 
-        const data = await User.find(where)
-          .select("-password")
-          .populate("accessLevel", "type")
-          .sort({ _id: 1 })
-          .limit(Number(pageSize))
-          .skip(Number(offset))
-          .exec();
+        const data = await User.findAndCountAll({
+          attributes: {
+            exclude: ["password"],
+          },
+          include: [
+            {
+              model: AccessLevel,
+              attributes: ["type"],
+            },
+          ],
+          order: [["_id", "ASC"]],
+          limit: Number(pageSize),
+          offset: Number(offset),
+          where,
+        });
 
-        const count = await User.countDocuments(where);
-
-        const totalPages = Math.ceil(count / Number(pageSize));
+        const totalPages = Math.ceil(data.count / Number(pageSize));
 
         res.status(200).json({
-          data,
+          data: data.rows,
           pagination: {
             currentPage: +page,
             pageSize: +pageSize,
@@ -209,10 +268,17 @@ export default {
   ],
 
   getUserById: [
-    // accessIdSupOrEqualTo(3),
+    accessIdSupOrEqualTo(3),
     async (req: Request, res: Response) => {
       try {
-        const data = await User.findById(req.params.id).populate("accessLevel", "type").exec();
+        const data = await User.findByPk(req.params.id, {
+          include: [
+            {
+              model: AccessLevel,
+              attributes: ["type"],
+            },
+          ],
+        });
         res.status(200).json(data);
       } catch (error) {
         console.error(error);
@@ -221,10 +287,12 @@ export default {
     },
   ],
   deleteUserById: [
-    // accessIdSupOrEqualTo(3),
+    accessIdSupOrEqualTo(3),
     async (req: Request, res: Response) => {
       try {
-        const data = await User.findByIdAndDelete(req.params.id).exec();
+        const data = await User.destroy({
+          where: { _id: req.params.id },
+        });
         res.status(200).json(data);
       } catch (error) {
         console.error(error);
@@ -234,7 +302,7 @@ export default {
   ],
   updateProfile: [
     removeSpaces,
-    // accessIdSupOrEqualTo(1),
+    accessIdSupOrEqualTo(1),
     body("firstname")
       .notEmpty()
       .withMessage("Le champ Prénom est requis.")
@@ -250,10 +318,14 @@ export default {
         return res.status(400).json({ errors: errorMessages });
       }
 
-      const oldUser = await User.findById(req.params.id);
-      if (!oldUser) {
-        return res.status(404).end();
-      }
+      let oldUser: any = {};
+      User.findByPk(req.params.id)
+        .then((olduser: any) => {
+          oldUser = olduser;
+        })
+        .catch((err: any) => {
+          res.status(404).end();
+        });
 
       const body = req.body;
 
@@ -280,8 +352,10 @@ export default {
       }
 
       try {
-        const result = await User.findByIdAndUpdate(req.params.id, userData, { new: true });
-        if (!result) {
+        const result = await User.update(userData, {
+          where: { _id: req.params.id },
+        });
+        if (result[0] === 0) {
           res.status(204).end();
         } else {
           res.status(200).end();
@@ -295,10 +369,11 @@ export default {
   getUserByUsernameWithPassword: async (username: string, done: any) => {
     try {
       const user = await User.findOne({
-        email: username,
-      })
-        .populate("accessLevel")
-        .exec();
+        where: {
+          email: username,
+        },
+        include: [AccessLevel],
+      });
       if (user) {
         done(null, user);
       } else {
@@ -312,7 +387,7 @@ export default {
     const { email } = req.body;
 
     try {
-      const user = await User.findOne({ email }).exec();
+      const user = await User.findOne({ where: { email } });
 
       if (!user) {
         return res.status(400).send("user not found");
@@ -321,9 +396,13 @@ export default {
       const resetToken = crypto.randomBytes(20).toString("hex");
       const resetTokenExpires = Date.now() + 3600000 * 2; // 1 hour from now
 
-      user.resetToken = resetToken;
-      user.resetTokenExpires = resetTokenExpires;
-      await user.save();
+      await User.update(
+        {
+          resetToken,
+          resetTokenExpires,
+        },
+        { where: { email } }
+      );
 
       const transporter = nodemailer.createTransport({
         host: "ahmedatri.com",
@@ -360,9 +439,11 @@ export default {
 
     try {
       const user = await User.findOne({
-        resetToken: token,
-        resetTokenExpires: { $gt: Date.now() },
-      }).exec();
+        where: {
+          resetToken: token,
+          resetTokenExpires: { [Op.gt]: Date.now() },
+        },
+      });
 
       if (!user) {
         res.status(400).json("invalid or expired token");

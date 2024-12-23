@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 
 const urlSchema = z.object({
   url: z.string().url("Please enter a valid URL"),
@@ -17,8 +18,15 @@ const Home: React.FC = () => {
     resolver: zodResolver(urlSchema),
   });
 
-  const onSubmit = (data: UrlFormData) => {
-    console.log("Shortened URL:", data.url);
+  const onSubmit = async (data: UrlFormData) => {
+    try {
+      const res = await axios.post("/urls", data);
+
+      console.log("-------------------- res.data --------------------");
+      console.log(res.data);
+    } catch (err: any) {
+      console.log(err);
+    }
   };
 
   return (

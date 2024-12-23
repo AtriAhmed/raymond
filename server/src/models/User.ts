@@ -1,55 +1,21 @@
-import { DataTypes } from "sequelize";
-const AccessLevel = require("./AccessLevel.ts");
-const sequelize = require("../config/database.ts");
+const mongoose = require("mongoose");
 
-const User = sequelize.define(
-  "User",
+const UrlSchema = new mongoose.Schema(
   {
-    _id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
+    display: String,
     username: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING,
-      allowNull: false,
+      type: String,
       unique: true,
+      lowercase: true,
     },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    picture: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    accessId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: AccessLevel,
-        key: "permissionLevel",
-      },
-    },
-    resetToken: {
-      type: DataTypes.TEXT,
-    },
-    resetTokenExpires: {
-      type: DataTypes.DATE,
-    },
+    password: String,
+    picture: String,
+    accessId: Number,
+    active: Number,
   },
-  {
-    tableName: "users",
-    timestamps: false,
-  }
+  { timestamps: true }
 );
 
-User.belongsTo(AccessLevel, { foreignKey: "accessId" });
+module.exports = mongoose.model("User", UrlSchema);
 
-// User.sync({alter:true});
-
-module.exports = User;
+export {};

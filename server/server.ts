@@ -6,11 +6,13 @@ const app = express();
 const routes = require("./src/routes/index.ts");
 const fileUpload = require("express-fileupload");
 
+require("./src/config/mongooseConnect");
+
 const passport = require("passport");
 require("./src/config/passportConfig")(passport); // pass passport for configuration
 
-const session = require("express-session");
-const sessionStore = require("./src/config/promiseConnection");
+// const session = require("express-session");
+// const sessionStore = require("./src/config/promiseConnection");
 
 const PORT = process.env.PORT;
 const cors = require("cors");
@@ -19,34 +21,34 @@ var corsOptions = {
   origin: ["http://localhost:3000", "http://localhost:5173"],
 };
 
-const sequelize = require("./src/config/database");
+// const sequelize = require("./src/config/database");
 
-sequelize
-  .sync({ force: true })
-  .then(() => {
-    console.log("sequelize connected !");
-  })
-  .catch((error: any) => {
-    console.error("Error syncing models with the database:", error);
-  });
+// sequelize
+//   .sync({ force: true })
+//   .then(() => {
+//     console.log("sequelize connected !");
+//   })
+//   .catch((error: any) => {
+//     console.error("Error syncing models with the database:", error);
+//   });
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(fileUpload());
 app.use(express.static(__dirname + "/public"));
 app.use(cors(corsOptions));
-app.use(
-  session({
-    secret: process.env.MY_SECRET,
-    store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 30, // 3600000 1 hour in milliseconds. The expiration time of the cookie to set it as a persistent cookie.
-      sameSite: true,
-    },
-  })
-);
+// app.use(
+//   session({
+//     secret: process.env.MY_SECRET,
+//     store: sessionStore,
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//       maxAge: 1000 * 60 * 60 * 24 * 30, // 3600000 1 hour in milliseconds. The expiration time of the cookie to set it as a persistent cookie.
+//       sameSite: true,
+//     },
+//   })
+// );
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(routes);

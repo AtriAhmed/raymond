@@ -53,7 +53,7 @@ function Navbar() {
           )}
           <Link className="flex items-center gap-2" to="/">
             <img src="/logo.png" alt="" width={32} height={32} />
-            <span className={`text-lg font-semibold mt-1`}>URLShorten</span>
+            <span className={`text-lg font-semibold mt-1`}>URLShortener</span>
           </Link>
         </div>
         {/* <ul className="hidden sm:flex items-center gap-4 justify-between  mx-auto text-[10px] lg:text-sm font-medium">
