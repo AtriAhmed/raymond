@@ -3,12 +3,13 @@
 import Dropdown from "@/components/Dropdown";
 import { useAppContext } from "@/contexts/AppProvider";
 import { useAuthContext } from "@/contexts/AuthProvider";
-import { ArrowLeftStartOnRectangleIcon, Bars3Icon, LockClosedIcon, UserIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon } from "@heroicons/react/16/solid";
+import { ArrowLeftStartOnRectangleIcon, LockClosedIcon, UserIcon } from "@heroicons/react/24/outline";
 import { Link, useLocation } from "react-router-dom";
 
 function Navbar() {
   const { user, logout } = useAuthContext();
-  const { setShowMobileNavbar } = useAppContext();
+  const { setShowMobileSidebar } = useAppContext();
   const location = useLocation();
   const pathname = location.pathname;
 
@@ -38,19 +39,9 @@ function Navbar() {
   ];
 
   return (
-    <header className="shrink-0 fixed w-full top-0 left-0 z-[20] flex items-center h-[55px] px-4 border-b border-slate-200 ">
+    <header className="shrink-0 fixed w-full top-0 left-0 z-[20] flex items-center h-[55px] px-4 border-b border-slate-200 bg-white">
       <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
-          {pathname !== "/" && (
-            <button
-              className={`block md:hidden`}
-              onClick={() => {
-                setShowMobileNavbar(true);
-              }}
-            >
-              <Bars3Icon className="h-7 w-7 text-green-700" />
-            </button>
-          )}
           <Link className="flex items-center gap-2" to="/">
             <img src="/logo.png" alt="" width={32} height={32} />
             <span className={`text-lg font-semibold mt-1`}>URLShortener</span>
@@ -102,7 +93,7 @@ function Navbar() {
             }
           })}
         </ul> */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {user ? (
             <Dropdown items={dropdownItems} position="right" renderItem={(item) => item}>
               {(isOpen) => (
@@ -127,6 +118,14 @@ function Navbar() {
             </Link>
           )}
           {/* <ShoppingCartIcon className="h-6" /> */}
+          <button
+            className={`block md:hidden`}
+            onClick={() => {
+              setShowMobileSidebar(true);
+            }}
+          >
+            <Bars3Icon className="h-7 w-7 text-purple hover:text-purple-dark" />
+          </button>
         </div>
       </div>
     </header>

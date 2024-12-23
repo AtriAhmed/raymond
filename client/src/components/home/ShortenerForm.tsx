@@ -1,5 +1,6 @@
 import CustomToast from "@/components/CustomToast";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/16/solid";
+import { useAuthContext } from "@/contexts/AuthProvider";
+import { ArrowTopRightOnSquareIcon, AtSymbolIcon, LinkIcon } from "@heroicons/react/16/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
@@ -22,8 +23,13 @@ interface UrlFormData extends z.infer<typeof urlSchema> {
   apiError: string;
 }
 
-export default function ShortenerForm() {
+type ShortenerFormProps = {
+  fetchUrls: () => void;
+};
+
+export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
   const [shortenedUrl, setShortenedUrl] = useState<string | null>(null);
+  const { fingerprint } = useAuthContext();
 
   const {
     register,
@@ -40,8 +46,13 @@ export default function ShortenerForm() {
     });
     setShortenedUrl(null);
 
+    const payload = {
+      ...data,
+      fingerprint,
+    };
+
     try {
-      const res = await axios.post("/urls", data);
+      const res = await axios.post("/urls", payload);
       setShortenedUrl(res.data.data.attributes.shortenedUrl);
     } catch (err: any) {
       if (err.response?.data?.errors?.[0]?.detail) {
@@ -72,29 +83,35 @@ export default function ShortenerForm() {
       <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
         <div className="flex flex-col space-y-4">
           <div>
-            <label htmlFor="url" className="block text-sm font-medium" style={{ color: "#8a21ed" }}>
-              URL
+            <label htmlFor="url" className="flex items-center gap-2 text-sm text-[#8a21ed] font-medium">
+              <div>
+                <LinkIcon className="size-4" />
+              </div>
+              <span>URL</span>
             </label>
             <input
               id="url"
               type="text"
               {...register("url")}
               placeholder="https://example.com"
-              className="w-full px-4 py-2 text-sm border rounded-lg shadow-sm focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none border-gray-300 duration-200"
+              className="w-full mt-1 px-4 py-2 text-sm border rounded-lg shadow-sm focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none border-gray-300 duration-200"
               autoFocus
             />
             {errors.url && <p className="mt-1 text-sm text-red-600">{errors.url.message}</p>}
           </div>
           <div>
-            <label htmlFor="alias" className="block text-sm font-medium" style={{ color: "#8a21ed" }}>
-              Custom Alias (optional)
+            <label htmlFor="alias" className="flex items-center gap-2 text-sm text-[#8a21ed] font-medium">
+              <div>
+                <AtSymbolIcon className="size-4" />
+              </div>
+              <span>Custom Alias (optional)</span>
             </label>
             <input
               id="alias"
               type="text"
               {...register("alias")}
               placeholder="abc123"
-              className="w-full px-4 py-2 text-sm border rounded-lg shadow-sm focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none border-gray-300 duration-200"
+              className="mt-1 w-full px-4 py-2 text-sm border rounded-lg shadow-sm focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none border-gray-300 duration-200"
             />
             {errors.alias && <p className="mt-1 text-sm text-red-600">{errors.alias.message}</p>}
           </div>

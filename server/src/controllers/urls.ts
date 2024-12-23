@@ -16,7 +16,7 @@ const generateUniqueAlias = async (): Promise<string> => {
 };
 
 export const create = async (req: Request, res: Response): Promise<any> => {
-  const { url, alias } = req.body;
+  const { url, alias, fingerprint } = req.body;
 
   try {
     // Generate a new alias if not provided and ensure uniqueness
@@ -42,6 +42,7 @@ export const create = async (req: Request, res: Response): Promise<any> => {
     const newUrl = await Url.create({
       url,
       alias: aliasToUse,
+      fingerprint,
     });
 
     res.status(201).json({
@@ -101,6 +102,50 @@ export const redirect = async (req: Request, res: Response): Promise<any> => {
           status: "500",
           title: "Internal Server Error",
           detail: "Something went wrong while redirecting to the original URL.",
+        },
+      ],
+    });
+  }
+};
+
+export const getUrls = async (req: Request, res: Response): Promise<any> => {
+  const { fingerprint } = req.query;
+  const user = req.user; // Assuming `req.user` contains the authenticated user information
+
+  try {
+    let urls;
+
+    if (user) {
+      // Fetch URLs created by the connected user
+      urls = await Url.find({ creator: user._id });
+    } else if (fingerprint) {
+      // Fetch URLs associated with the provided fingerprint
+      urls = await Url.find({ fingerprint });
+    } else {
+      // No connected user or fingerprint provided, return nothing
+      return res.status(200).json({ data: [] });
+    }
+
+    // Respond with the fetched URLs
+    res.status(200).json({
+      data: urls.map((url: any) => ({
+        id: url._id,
+        attributes: {
+          originalUrl: url.url,
+          shortenedUrl: `${process.env.API_URL}/${url.alias}`,
+          visits: url.visits,
+          createdAt: url.createdAt,
+        },
+      })),
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      errors: [
+        {
+          status: "500",
+          title: "Internal Server Error",
+          detail: "Something went wrong while fetching URLs.",
         },
       ],
     });

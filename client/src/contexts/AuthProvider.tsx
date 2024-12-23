@@ -1,10 +1,12 @@
-import React, { useState, useContext, useEffect, ReactNode } from "react";
-import axios from "axios";
 import { User } from "@/types";
+import axios from "axios";
+import React, { ReactNode, useContext, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 type AuthContextType = {
   user: User | undefined | null;
   setUser: React.Dispatch<React.SetStateAction<User | undefined | null>>;
+  fingerprint: string;
   fetchUser: () => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -15,8 +17,21 @@ type AuthProviderProps = {
   children: ReactNode;
 };
 
+function generateRandomFingerprint(): string {
+  return uuidv4().toString().replace(/-/g, "");
+}
+
 function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | undefined | null>(undefined);
+  const [fingerprint] = useState<string>(() => {
+    const savedFingerprint = localStorage.getItem("user-fingerprint");
+    if (savedFingerprint) {
+      return savedFingerprint;
+    }
+    const newFingerprint = generateRandomFingerprint();
+    localStorage.setItem("user-fingerprint", newFingerprint);
+    return newFingerprint;
+  });
 
   async function fetchUser(): Promise<void> {
     try {
@@ -36,7 +51,7 @@ function AuthProvider({ children }: AuthProviderProps) {
     fetchUser();
   }, []);
 
-  return <AuthContext.Provider value={{ user, setUser, fetchUser, logout }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, setUser, fingerprint, fetchUser, logout }}>{children}</AuthContext.Provider>;
 }
 
 export default AuthProvider;

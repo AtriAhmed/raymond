@@ -7,3 +7,14 @@ export type User = {
   resetToken: string;
   resetTokenExpires: Date;
 };
+
+export type Url = {
+  _id: string;
+  originalUrl: string;
+  shortenedUrl: string;
+  creator: string | User | null;
+  fingerprint: string;
+  visits: number;
+  createdAt: Date;
+  updatedAt: Date;
+};

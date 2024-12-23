@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 
-const UrlSchema = new mongoose.Schema(
+const UserSchema = new mongoose.Schema(
   {
-    display: String,
     username: {
       type: String,
       unique: true,
       lowercase: true,
     },
+    email: String,
     password: String,
     picture: String,
     accessId: Number,
@@ -16,6 +16,6 @@ const UrlSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("User", UrlSchema);
+module.exports = mongoose.model("User", UserSchema);
 
 export {};

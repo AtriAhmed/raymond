@@ -7,7 +7,8 @@ const router = Router();
 router
   .route("/urls")
   // POST "/api/user" Example Request: { "vals": ["test_user", "111111", 1] }
-  .post(urlsController.create); // create a new user
+  .post(urlsController.create) // create a new user
+  .get(urlsController.getUrls);
 
 router.route("/:id").get(urlsController.redirect);
 
