@@ -117,10 +117,10 @@ export const getUrls = async (req: Request, res: Response): Promise<any> => {
 
     if (user) {
       // Fetch URLs created by the connected user
-      urls = await Url.find({ creator: user._id });
+      urls = await Url.find({ creator: user._id }).sort({ createdAt: -1 });
     } else if (fingerprint) {
       // Fetch URLs associated with the provided fingerprint
-      urls = await Url.find({ fingerprint });
+      urls = await Url.find({ fingerprint }).sort({ createdAt: -1 });
     } else {
       // No connected user or fingerprint provided, return nothing
       return res.status(200).json({ data: [] });

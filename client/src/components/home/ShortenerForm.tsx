@@ -1,6 +1,8 @@
 import CustomToast from "@/components/CustomToast";
+import { RingLoader } from "@/components/Loader";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { ArrowTopRightOnSquareIcon, AtSymbolIcon, LinkIcon } from "@heroicons/react/16/solid";
+import { ClipboardIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
@@ -29,6 +31,7 @@ type ShortenerFormProps = {
 
 export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
   const [shortenedUrl, setShortenedUrl] = useState<string | null>(null);
+  const [originalUrl, setOriginalUrl] = useState<string | null>(null);
   const { fingerprint } = useAuthContext();
 
   const {
@@ -45,6 +48,7 @@ export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
       message: "",
     });
     setShortenedUrl(null);
+    setOriginalUrl(null);
 
     const payload = {
       ...data,
@@ -52,8 +56,10 @@ export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
     };
 
     try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       const res = await axios.post("/urls", payload);
       setShortenedUrl(res.data.data.attributes.shortenedUrl);
+      setOriginalUrl(data.url);
     } catch (err: any) {
       if (err.response?.data?.errors?.[0]?.detail) {
         setError("apiError", {
@@ -73,6 +79,69 @@ export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
       toast.custom((t) => <CustomToast t={t} message={"URL copied to clipboard"} />);
     }
   };
+
+  if (shortenedUrl) {
+    return (
+      <div className="w-full max-w-md mx-2 py-6 px-3 md:px-6 bg-white rounded border">
+        <h1 className="text-2xl font-bold text-center" style={{ color: "#8a21ed" }}>
+          Shortened URL
+        </h1>
+        <div className="mt-6">
+          <div className="flex items-center gap-2 mt-4 text-sm text-[#8a21ed] font-medium">
+            <div>
+              <LinkIcon className="size-4" />
+            </div>
+            <span>Original URL</span>
+          </div>
+          <Link
+            to={originalUrl || ""}
+            target="_blank"
+            className="block relative mt-1 px-4 py-2 text-center text-lg font-bold text-gray-700 rounded-lg border border-[#8a21ed] shadow-sm bg-gray-100 hover:bg-gray-200 hover:underline focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
+          >
+            <span>{originalUrl}</span>
+            <div className="absolute top-1 right-1">
+              <ArrowTopRightOnSquareIcon className="size-5" />
+            </div>
+          </Link>
+          {/* <p className="mt-4 text-center text-sm font-medium text-gray-700">Shortened URL:</p> */}
+          <div className="flex items-center gap-2 mt-4 text-sm text-[#8a21ed] font-medium">
+            <div>
+              <AtSymbolIcon className="size-4" />
+            </div>
+            <span>Shortened URL</span>
+          </div>
+          <Link
+            to={shortenedUrl}
+            target="_blank"
+            className="block relative mt-1 px-4 py-1.5 text-center text-lg font-bold text-gray-700 rounded-lg border border-[#8a21ed] shadow-sm bg-gray-100 hover:bg-gray-200 hover:underline focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
+          >
+            <span>{shortenedUrl}</span>
+            <div className="absolute top-1 right-1">
+              <ArrowTopRightOnSquareIcon className="size-5" />
+            </div>
+          </Link>
+          <div className="flex justify-between mt-4">
+            <button
+              onClick={handleCopy}
+              className="flex gap-1 items-center px-4 py-1.5 text-white rounded-lg shadow bg-[#8a21ed] hover:bg-[#690fbd] focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
+            >
+              <ClipboardIcon className="size-4" />
+              <p className="">Copy</p>
+            </button>
+            <button
+              onClick={() => {
+                setShortenedUrl(null);
+                setOriginalUrl(null);
+              }}
+              className="px-4 py-2 text-white rounded-lg shadow bg-gray-500 hover:bg-gray-700 focus:ring-1 ring-offset-1 focus:ring-gray-700 focus:outline-none duration-200"
+            >
+              Shorten New URL
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md mx-2 py-6 px-3 md:px-6 bg-white rounded border">
@@ -117,35 +186,14 @@ export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
           </div>
           <button
             type="submit"
-            className="px-4 py-2 text-white rounded-lg shadow bg-purple hover:bg-purple-dark focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
+            className="flex items-center justify-center h-[40px] px-4 py-2 text-white rounded-lg shadow bg-purple hover:bg-purple-dark focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Shortening..." : "Shorten"}
+            {isSubmitting ? <RingLoader /> : "Shorten"}
           </button>
         </div>
       </form>
       {errors.apiError?.message && <p className="mt-4 text-sm text-center text-red-600">{errors.apiError.message}</p>}
-      {shortenedUrl && (
-        <div className="mt-6">
-          <p className="text-center text-sm font-medium text-gray-600">Your shortened URL:</p>
-          <Link
-            to={shortenedUrl}
-            target="_blank"
-            className="block relative mt-2 px-4 py-2 text-center text-lg font-bold text-gray-700 rounded-lg border border-[#8a21ed] shadow-sm bg-gray-100 hover:bg-gray-200 hover:underline focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
-          >
-            <span>{shortenedUrl}</span>
-            <div className="absolute top-1 right-1">
-              <ArrowTopRightOnSquareIcon className="size-5" />
-            </div>
-          </Link>
-          <button
-            onClick={handleCopy}
-            className="block mt-4 mx-auto px-4 py-2 text-white rounded-lg shadow bg-[#8a21ed] hover:bg-[#690fbd] focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
-          >
-            Copy to clipboard
-          </button>
-        </div>
-      )}
     </div>
   );
 }
