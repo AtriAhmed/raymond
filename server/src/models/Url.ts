@@ -3,7 +3,13 @@ const mongoose = require("mongoose");
 const UrlSchema = new mongoose.Schema(
   {
     url: String,
-    short: String,
+    alias: String,
+    creator: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+    fingerprint: String,
+    visits: { type: Number, default: 0 },
   },
   { timestamps: true }
 );

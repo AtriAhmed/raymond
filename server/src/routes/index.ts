@@ -15,7 +15,7 @@ router.use("/users", usersRoute);
 // '/api/accessLevels' for all routes involving Access Levels
 router.use("/accessLevels", accessLevelRoute);
 
-router.use("/urls", urlsRoute);
+router.use("/", urlsRoute);
 
 // =========== SEND REACT PRODUCTION BUILD ====================
 router.get("*", (req: any, res: Response) => {

@@ -418,7 +418,7 @@ export default {
         from: "IBS <noreply@ahmedatri.com>",
         to: email,
         subject: "Réinitialisation de mot de passe IBS",
-        html: emailBody(`${user.lastname} ${user.firstname}`, `${process.env.FRONTEND_URL}/reset-password/${resetToken}`, "1 heure"),
+        html: emailBody(`${user.lastname} ${user.firstname}`, `${process.env.APP_URL}/reset-password/${resetToken}`, "1 heure"),
       };
 
       try {

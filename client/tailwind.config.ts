@@ -6,6 +6,12 @@ export default {
       fontFamily: {
         rubik: ["Rubik", "sans-serif"],
       },
+      colors: {
+        purple: {
+          DEFAULT: "#8a21ed",
+          dark: "#690fbd",
+        },
+      },
     },
   },
   plugins: [],

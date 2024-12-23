@@ -38,7 +38,7 @@ function Navbar() {
   ];
 
   return (
-    <header className="shrink-0 fixed w-full top-0 left-0 z-[20] flex items-center h-[55px] px-4 border-b border-slate-200 bg-white ">
+    <header className="shrink-0 fixed w-full top-0 left-0 z-[20] flex items-center h-[55px] px-4 border-b border-slate-200 ">
       <div className="flex items-center justify-between w-full max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
           {pathname !== "/" && (
@@ -119,7 +119,7 @@ function Navbar() {
             </Dropdown>
           ) : (
             <Link
-              className={`flex items-center gap-1 py-1 px-4 rounded-xl bg-[#8a21ed] hover:bg-green-700 text-white text-[15px] duration-200 shadow-md`}
+              className={`flex items-center gap-1 py-1 px-4 rounded-xl bg-[#8a21ed] hover:bg-[#690fbd] text-white text-[15px] duration-200 shadow-md`}
               to="/auth/login"
             >
               <LockClosedIcon className="w-4 h-4" />

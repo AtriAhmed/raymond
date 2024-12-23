@@ -5,7 +5,7 @@ const router = Router();
 
 // Matches with "/api/user"
 router
-  .route("/")
+  .route("/urls")
   // POST "/api/user" Example Request: { "vals": ["test_user", "111111", 1] }
   .post(urlsController.create); // create a new user
 

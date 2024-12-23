@@ -20,12 +20,7 @@ router.get("/status", (req: any, res: Response) => {
     return res.status(200).json({ user: req.user });
   }
   res.status(200).json({
-    user: {
-      accessId: 0,
-      type: "visitor",
-      _id: 0,
-      username: "",
-    },
+    user: null,
   });
 });
 
