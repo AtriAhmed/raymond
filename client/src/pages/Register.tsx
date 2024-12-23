@@ -9,8 +9,8 @@ export default function Register() {
           <div className="w-fit mx-auto bg-slate-100 rounded-lg">
             <img src="/logo.png" width={60} height={60} alt="" sizes="100px" className="bg-contain" />
           </div>
-          <h3 className="mt-2 font-bold text-white text-lg">Let's Get Started WalletMap</h3>
-          <p className="text-slate-200 text-sm">Sign in to continue to WalletMap</p>
+          <h3 className="mt-2 font-bold text-white text-lg">Let's Get Started With URLShortener</h3>
+          <p className="text-slate-200 text-sm">Sign in to continue to URLShortener</p>
         </div>
         <div className="py-10">
           <RegisterComponent />

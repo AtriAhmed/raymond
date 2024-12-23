@@ -56,7 +56,6 @@ export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
     };
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
       const res = await axios.post("/urls", payload);
       setShortenedUrl(res.data.data.attributes.shortenedUrl);
       setOriginalUrl(data.url);
@@ -193,7 +192,7 @@ export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
           </button>
         </div>
       </form>
-      {errors.apiError?.message && <p className="mt-4 text-sm text-center text-red-600">{errors.apiError.message}</p>}
+      {errors.apiError?.message && <p className="mt-1 text-red-500 text-sm">{errors.apiError?.message}</p>}
     </div>
   );
 }

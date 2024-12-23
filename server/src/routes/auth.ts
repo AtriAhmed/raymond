@@ -8,7 +8,7 @@ router.post(
   "/login",
   // Using local strategy to redirect back to the signin page if there is an error
   function (req, res, next) {
-    passport.authenticate("local", { session: false }, function (err: any, user: any, info: any) {
+    passport.authenticate("local", function (err: any, user: any, info: any) {
       if (err) {
         return next(err);
       }

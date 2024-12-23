@@ -18,6 +18,8 @@ const generateUniqueAlias = async (): Promise<string> => {
 export const create = async (req: Request, res: Response): Promise<any> => {
   const { url, alias, fingerprint } = req.body;
 
+  const user = req.user;
+
   try {
     // Generate a new alias if not provided and ensure uniqueness
     const aliasToUse = alias || (await generateUniqueAlias());
@@ -42,7 +44,8 @@ export const create = async (req: Request, res: Response): Promise<any> => {
     const newUrl = await Url.create({
       url,
       alias: aliasToUse,
-      fingerprint,
+      fingerprint: fingerprint || null,
+      user: user ? user._id : null,
     });
 
     res.status(201).json({

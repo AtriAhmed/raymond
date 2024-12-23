@@ -14,6 +14,8 @@ require("./src/config/passportConfig")(passport); // pass passport for configura
 const session = require("express-session");
 // const sessionStore = require("./src/config/promiseConnection");
 
+const MongoStore = require("connect-mongo");
+
 const PORT = process.env.PORT;
 const cors = require("cors");
 var corsOptions = {
@@ -21,16 +23,7 @@ var corsOptions = {
   origin: ["http://localhost:3000", "http://localhost:5173"],
 };
 
-// const sequelize = require("./src/config/database");
-
-// sequelize
-//   .sync({ force: true })
-//   .then(() => {
-//     console.log("sequelize connected !");
-//   })
-//   .catch((error: any) => {
-//     console.error("Error syncing models with the database:", error);
-//   });
+const mongoose = require("mongoose");
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -40,7 +33,9 @@ app.use(cors(corsOptions));
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
-    // store: sessionStore,
+    store: MongoStore.create({
+      client: mongoose.connection.getClient(),
+    }),
     resave: false,
     saveUninitialized: false,
     cookie: {
