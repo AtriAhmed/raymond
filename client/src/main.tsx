@@ -7,7 +7,6 @@ import Login from "@/pages/Login";
 import axios from "axios";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import "react-toastify/dist/ReactToastify.css";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;

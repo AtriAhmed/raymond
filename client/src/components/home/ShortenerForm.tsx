@@ -1,7 +1,11 @@
+import CustomToast from "@/components/CustomToast";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/16/solid";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 
 const urlSchema = z.object({
@@ -55,12 +59,12 @@ export default function ShortenerForm() {
   const handleCopy = async () => {
     if (shortenedUrl) {
       await navigator.clipboard.writeText(shortenedUrl);
-      alert("Shortened URL copied to clipboard!");
+      toast.custom((t) => <CustomToast t={t} message={"URL copied to clipboard"} />);
     }
   };
 
   return (
-    <div className="w-full max-w-md p-6 bg-white rounded border">
+    <div className="w-full max-w-md mx-2 py-6 px-3 md:px-6 bg-white rounded border">
       <h1 className="text-2xl font-bold text-center" style={{ color: "#8a21ed" }}>
         Shorten your long URLs
       </h1>
@@ -94,7 +98,6 @@ export default function ShortenerForm() {
             />
             {errors.alias && <p className="mt-1 text-sm text-red-600">{errors.alias.message}</p>}
           </div>
-          {errors.apiError?.message && <p className="mt-4 text-sm text-center text-red-600">{errors.apiError.message}</p>}
           <button
             type="submit"
             className="px-4 py-2 text-white rounded-lg shadow bg-purple hover:bg-purple-dark focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
@@ -104,15 +107,20 @@ export default function ShortenerForm() {
           </button>
         </div>
       </form>
+      {errors.apiError?.message && <p className="mt-4 text-sm text-center text-red-600">{errors.apiError.message}</p>}
       {shortenedUrl && (
         <div className="mt-6">
           <p className="text-center text-sm font-medium text-gray-600">Your shortened URL:</p>
-          <div
-            className="mt-2 px-4 py-2 text-center text-lg font-bold text-gray-700 rounded-lg border shadow-sm bg-gray-100"
-            style={{ borderColor: "#8a21ed" }}
+          <Link
+            to={shortenedUrl}
+            target="_blank"
+            className="block relative mt-2 px-4 py-2 text-center text-lg font-bold text-gray-700 rounded-lg border border-[#8a21ed] shadow-sm bg-gray-100 hover:bg-gray-200 hover:underline focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
           >
-            {shortenedUrl}
-          </div>
+            <span>{shortenedUrl}</span>
+            <div className="absolute top-1 right-1">
+              <ArrowTopRightOnSquareIcon className="size-5" />
+            </div>
+          </Link>
           <button
             onClick={handleCopy}
             className="block mt-4 mx-auto px-4 py-2 text-white rounded-lg shadow bg-[#8a21ed] hover:bg-[#690fbd] focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
