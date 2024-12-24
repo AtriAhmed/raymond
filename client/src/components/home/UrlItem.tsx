@@ -6,7 +6,13 @@ import { ClipboardIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 
-export default function UrlItem({ url }: { url: Url }) {
+type UrlItemProps = {
+  url: Url;
+  setToEdit: (url: Url) => void;
+  setShowEditModal: (show: boolean) => void;
+};
+
+export default function UrlItem({ url, setToEdit, setShowEditModal }: UrlItemProps) {
   const { user } = useAuthContext();
 
   async function handleCopy() {
@@ -20,6 +26,9 @@ export default function UrlItem({ url }: { url: Url }) {
     if (!user) {
       return toast.custom((t) => <CustomToast t={t} type="warning" message={"Log in to edit your URLs"} />);
     }
+
+    setToEdit(url);
+    setShowEditModal(true);
   }
 
   async function handleDelete() {
@@ -44,7 +53,15 @@ export default function UrlItem({ url }: { url: Url }) {
           <span className="font-medium text-black">Visits:</span> {url.visits}
         </p>
         <p className="mt-1.5 pl-2 text-xs text-slate-500">
-          <span className="font-medium text-black">Created:</span> {new Date(url.createdAt).toLocaleDateString("en-US")}
+          <span className="font-medium text-black">Created:</span>{" "}
+          {new Date(url.createdAt).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          })}
         </p>
       </div>
       <div className="flex gap-1 mt-3">

@@ -120,7 +120,7 @@ export const getUrls = async (req: Request, res: Response): Promise<any> => {
 
     if (user) {
       // Fetch URLs created by the connected user
-      urls = await Url.find({ creator: user._id }).sort({ createdAt: -1 });
+      urls = await Url.find({ user: user._id }).sort({ createdAt: -1 });
     } else if (fingerprint) {
       // Fetch URLs associated with the provided fingerprint
       urls = await Url.find({ fingerprint }).sort({ createdAt: -1 });
@@ -136,6 +136,7 @@ export const getUrls = async (req: Request, res: Response): Promise<any> => {
         attributes: {
           originalUrl: url.url,
           shortenedUrl: `${process.env.API_URL}/${url.alias}`,
+          alias: url.alias,
           visits: url.visits,
           createdAt: url.createdAt,
         },
@@ -149,6 +150,76 @@ export const getUrls = async (req: Request, res: Response): Promise<any> => {
           status: "500",
           title: "Internal Server Error",
           detail: "Something went wrong while fetching URLs.",
+        },
+      ],
+    });
+  }
+};
+
+// Update route
+export const update = async (req: Request, res: Response): Promise<any> => {
+  const { id } = req.params; // The ID of the URL document to update
+  const { url, alias } = req.body;
+
+  try {
+    // Find the document by ID
+    const existingUrl = await Url.findById(id);
+
+    if (!existingUrl) {
+      return res.status(404).json({
+        errors: [
+          {
+            status: "404",
+            title: "Not Found",
+            detail: `The URL with ID '${id}' was not found.`,
+          },
+        ],
+      });
+    }
+
+    // Check if the new alias is already in use (if provided)
+    if (alias) {
+      const aliasInUse = await Url.findOne({ alias });
+      if (aliasInUse && aliasInUse._id.toString() !== id) {
+        return res.status(409).json({
+          errors: [
+            {
+              status: "409",
+              title: "Conflict",
+              detail: `The alias '${alias}' is already in use. Please choose a different one.`,
+            },
+          ],
+        });
+      }
+    }
+
+    // Generate a new alias if not provided
+    const aliasToUse = alias || (await generateUniqueAlias());
+
+    // Update the URL and alias
+    existingUrl.url = url || existingUrl.url;
+    existingUrl.alias = aliasToUse;
+
+    await existingUrl.save();
+
+    return res.status(200).json({
+      data: {
+        type: "shortUrl",
+        id: existingUrl._id,
+        attributes: {
+          originalUrl: existingUrl.url,
+          shortenedUrl: `${process.env.API_URL}/${existingUrl.alias}`,
+        },
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      errors: [
+        {
+          status: "500",
+          title: "Internal Server Error",
+          detail: "Something went wrong while updating the URL.",
         },
       ],
     });

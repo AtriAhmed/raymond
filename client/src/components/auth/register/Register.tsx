@@ -1,6 +1,6 @@
 import AccountVerificationForm from "@/components/auth/register/AccountVerificationForm";
 import RegisterForm from "@/components/auth/register/RegisterForm";
-import React, { useState } from "react";
+import { useState } from "react";
 
 export default function Register() {
   const [verificationToken, setVerificationToken] = useState<string | null>(null);

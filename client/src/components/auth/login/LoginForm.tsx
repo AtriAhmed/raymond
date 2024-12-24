@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import * as z from "zod";
 
 const schema = z.object({
@@ -18,7 +17,6 @@ interface FormValues extends z.infer<typeof schema> {
 }
 
 export default function LoginForm() {
-  const navigate = useNavigate();
   const { fetchUser } = useAuthContext();
 
   const {
@@ -33,7 +31,7 @@ export default function LoginForm() {
 
   async function onSubmit(data: any) {
     try {
-      const res = await axios.post("/auth/login", data);
+      await axios.post("/auth/login", data);
 
       fetchUser();
     } catch (err: any) {

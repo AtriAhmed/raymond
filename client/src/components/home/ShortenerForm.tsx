@@ -1,7 +1,7 @@
 import CustomToast from "@/components/CustomToast";
 import { RingLoader } from "@/components/Loader";
 import { useAuthContext } from "@/contexts/AuthProvider";
-import { ArrowTopRightOnSquareIcon, AtSymbolIcon, LinkIcon } from "@heroicons/react/16/solid";
+import { ArrowTopRightOnSquareIcon, AtSymbolIcon, LinkIcon, ScissorsIcon } from "@heroicons/react/16/solid";
 import { ClipboardIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
@@ -12,7 +12,20 @@ import { Link } from "react-router-dom";
 import { z } from "zod";
 
 const urlSchema = z.object({
-  url: z.string().url("Please enter a valid URL"),
+  url: z
+    .string()
+    .url("Please enter a valid URL")
+    .refine(
+      (val) => {
+        const parts = val.split(".");
+        return (
+          parts.length >= 2 && // Ensure there is at least one period
+          parts[0].length >= 2 && // At least 2 characters before the period
+          parts[parts.length - 1].length >= 2 // At least 2 characters after the period
+        );
+      },
+      { message: "Please enter a valid URL" }
+    ),
   alias: z
     .string()
     .optional()
@@ -38,6 +51,7 @@ export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
     register,
     handleSubmit,
     setError,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<UrlFormData>({
     resolver: zodResolver(urlSchema),
@@ -57,10 +71,21 @@ export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
 
     try {
       const res = await axios.post("/urls", payload);
+
+      fetchUrls();
+
+      toast.custom((t) => <CustomToast t={t} message={"URL shortened successfully"} />);
+
       setShortenedUrl(res.data.data.attributes.shortenedUrl);
       setOriginalUrl(data.url);
+
+      reset();
     } catch (err: any) {
-      if (err.response?.data?.errors?.[0]?.detail) {
+      if (err?.status === 429) {
+        setError("apiError", {
+          message: "You have created too many URLs in a short period of time. Please try again later.",
+        });
+      } else if (err.response?.data?.errors?.[0]?.detail) {
         setError("apiError", {
           message: err.response.data.errors[0].detail,
         });
@@ -188,7 +213,14 @@ export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
             className="flex items-center justify-center h-[40px] px-4 py-2 text-white rounded-lg shadow bg-purple hover:bg-purple-dark focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
             disabled={isSubmitting}
           >
-            {isSubmitting ? <RingLoader /> : "Shorten"}
+            {isSubmitting ? (
+              <RingLoader />
+            ) : (
+              <div className="flex gap-3 items-center">
+                <span>Shorten</span>
+                <ScissorsIcon className="size-5" />
+              </div>
+            )}
           </button>
         </div>
       </form>

@@ -4,7 +4,7 @@ const UrlSchema = new mongoose.Schema(
   {
     url: String,
     alias: String,
-    creator: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },

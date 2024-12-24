@@ -1,19 +1,32 @@
-import SidebarItem from "@/components/home/SidebarItem";
+import EditUrlModal from "@/components/home/EditUrlModal";
 import UrlItem from "@/components/home/UrlItem";
 import { useAppContext } from "@/contexts/AppProvider";
 import { Url } from "@/types";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { ArrowsRightLeftIcon, DocumentCheckIcon, ListBulletIcon, UserIcon } from "@heroicons/react/24/outline";
+import { useState } from "react";
 
 type SidebarProps = {
   urls: Url[];
+  fetchUrls: () => void;
 };
 
-export default function Sidebar({ urls }: SidebarProps) {
+export default function Sidebar({ urls, fetchUrls }: SidebarProps) {
   const { showMobileSidebar, setShowMobileSidebar, isMobile } = useAppContext();
+  const [toEdit, setToEdit] = useState<Url | null>(null);
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
 
   return (
     <>
+      <EditUrlModal
+        show={showEditModal}
+        hide={() => {
+          setShowEditModal(false);
+          setToEdit(null);
+        }}
+        fetchUrls={fetchUrls}
+        toEdit={toEdit}
+      />
       {/*  ---------------------------- Desktop Sidebar ---------------------------- */}
       {/*  ---------------------------- Desktop Sidebar ---------------------------- */}
       <div className="sticky top-[55px] self-start shrink-0 overflow-hidden">
@@ -28,7 +41,7 @@ export default function Sidebar({ urls }: SidebarProps) {
               {urls?.length ? (
                 <ul className=" flex flex-col gap-2 mt-4 text-sm">
                   {urls.map((url) => (
-                    <UrlItem key={url._id} url={url} />
+                    <UrlItem key={url._id} url={url} setToEdit={setToEdit} setShowEditModal={setShowEditModal} />
                   ))}
                 </ul>
               ) : (

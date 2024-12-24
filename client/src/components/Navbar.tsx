@@ -22,13 +22,13 @@ function Navbar() {
   }
 
   const dropdownItems = [
-    <Link
-      to="/app"
-      className="grid grid-cols-[25px_1fr] items-center py-2 px-3 rounded font-normal text-black text-[15px] hover:bg-slate-200 transition duration-300"
-    >
-      <UserIcon className="size-4" />
-      <span>Dashboard</span>
-    </Link>,
+    // <Link
+    //   to="/app"
+    //   className="grid grid-cols-[25px_1fr] items-center py-2 px-3 rounded font-normal text-black text-[15px] hover:bg-slate-200 transition duration-300"
+    // >
+    //   <UserIcon className="size-4" />
+    //   <span>Dashboard</span>
+    // </Link>,
     <button
       onClick={handleLogout}
       className="grid grid-cols-[25px_1fr] items-center w-full text-left py-2 px-3 rounded font-normal text-black text-[15px] hover:bg-slate-200 transition duration-300"

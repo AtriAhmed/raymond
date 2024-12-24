@@ -15,6 +15,7 @@ export type Url = {
   creator: string | User | null;
   fingerprint: string;
   visits: number;
+  alias: string;
   createdAt: Date;
   updatedAt: Date;
 };
