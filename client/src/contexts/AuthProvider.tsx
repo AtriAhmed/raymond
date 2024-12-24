@@ -47,6 +47,9 @@ function AuthProvider({ children }: AuthProviderProps) {
     } catch (err) {}
   }
 
+  console.log("-------------------- user --------------------");
+  console.log(user);
+
   useEffect(() => {
     fetchUser();
   }, []);

@@ -120,7 +120,7 @@ export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
           <Link
             to={originalUrl || ""}
             target="_blank"
-            className="block relative mt-1 px-4 py-2 text-center text-lg font-bold text-gray-700 rounded-lg border border-[#8a21ed] shadow-sm bg-gray-100 hover:bg-gray-200 hover:underline focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
+            className="block relative mt-1 px-4 py-2 text-center text-lg font-bold text-gray-700 rounded-lg border border-[#8a21ed] shadow-sm bg-gray-100 hover:bg-gray-200 hover:underline focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200 overflow-hidden text-ellipsis"
           >
             <span>{originalUrl}</span>
             <div className="absolute top-1 right-1">
@@ -137,7 +137,7 @@ export default function ShortenerForm({ fetchUrls }: ShortenerFormProps) {
           <Link
             to={shortenedUrl}
             target="_blank"
-            className="block relative mt-1 px-4 py-1.5 text-center text-lg font-bold text-gray-700 rounded-lg border border-[#8a21ed] shadow-sm bg-gray-100 hover:bg-gray-200 hover:underline focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
+            className="block relative mt-1 px-4 py-1.5 text-center text-lg font-bold text-gray-700 rounded-lg border border-[#8a21ed] shadow-sm bg-gray-100 hover:bg-gray-200 hover:underline focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200 overflow-hidden text-ellipsis"
           >
             <span>{shortenedUrl}</span>
             <div className="absolute top-1 right-1">

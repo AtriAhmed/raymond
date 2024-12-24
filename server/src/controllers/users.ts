@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { z } from "zod";
 
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
@@ -8,7 +9,29 @@ const TempAccount = require("../models/TempAccount");
 
 const saltRounds = 10;
 
+const createUserSchema = z.object({
+  email: z.string().email({ message: "Please provide a valid email." }),
+  password: z.string().min(6, { message: "Password must be at least 6 characters long." }),
+});
+
+const verifyUserSchema = z.object({
+  token: z.string(),
+  otp: z.string(),
+});
+
 export async function create(req: Request, res: Response) {
+  const validation = createUserSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({
+      errors: validation.error.errors.map((error) => ({
+        status: "400",
+        title: "Validation Error",
+        detail: error.message,
+        source: { pointer: error.path.join(".") },
+      })),
+    });
+  }
+
   const body = req.body;
 
   try {
@@ -69,6 +92,18 @@ export async function create(req: Request, res: Response) {
 }
 
 export async function verify(req: Request, res: Response) {
+  const validation = verifyUserSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({
+      errors: validation.error.errors.map((error) => ({
+        status: "400",
+        title: "Validation Error",
+        detail: error.message,
+        source: { pointer: error.path.join(".") },
+      })),
+    });
+  }
+
   const body = await req.body;
 
   try {
