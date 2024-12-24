@@ -56,7 +56,7 @@ export default function EditUrlModal({ show, hide, afterLeave, fetchUrls, toEdit
     resolver: zodResolver(urlSchema),
   });
 
-  const inputRef = useRef<() => void | null>(null);
+  const inputRef = useRef<(() => void) | null>(null);
 
   const { ref, ...restRegister } = register("url");
 

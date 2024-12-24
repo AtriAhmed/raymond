@@ -79,7 +79,7 @@ export default function Sidebar({ urls, fetchUrls }: SidebarProps) {
         onClose={() => {
           setShowMobileSidebar(false);
         }}
-        className="relative z-50"
+        className="relative z-50 [&_*]:scrollbar"
       >
         {isMobile && <DialogBackdrop transition className="fixed inset-0 bg-black/30 cursor-pointer duration-200 data-[closed]:opacity-0" />}
 

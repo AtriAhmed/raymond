@@ -53,12 +53,11 @@ function Navbar() {
               {(isOpen) => (
                 <div className={`relative`}>
                   <div className="flex gap-2 items-center">
-                    <p className="hidden sm:block">{user?.username}</p>
+                    <p className="hidden sm:block text-sm font-medium">{user?.username}</p>
                     <div className="relative w-10 aspect-square rounded-full border border-purple overflow-hidden">
                       <img src={`${import.meta.env.VITE_API_URL}${user?.picture}` || ""} alt="" className="absolute inset-0 object-cover" />
                     </div>
                   </div>
-                  {/* {user?.username} */}
                   <i className="absolute bottom-0 right-0 translate-x-1 translate-y-1 flex items-center justify-center size-4 bg-white rounded-full overflow-hidden">
                     <ChevronDownIcon className={`size-4 duration-200 ${isOpen ? "-rotate-180" : ""}`} />
                   </i>
