@@ -16,6 +16,7 @@ export type Url = {
   fingerprint: string;
   visits: number;
   alias: string;
+  image: string;
   createdAt: Date;
   updatedAt: Date;
 };

@@ -10,6 +10,7 @@ const UrlSchema = new mongoose.Schema(
     },
     fingerprint: String,
     visits: { type: Number, default: 0 },
+    image: String,
   },
   { timestamps: true }
 );

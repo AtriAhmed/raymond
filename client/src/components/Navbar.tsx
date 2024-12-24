@@ -47,59 +47,16 @@ function Navbar() {
             <span className={`text-lg font-semibold mt-1`}>URLShortener</span>
           </Link>
         </div>
-        {/* <ul className="hidden sm:flex items-center gap-4 justify-between  mx-auto text-[10px] lg:text-sm font-medium">
-          {items.map((item, index) => {
-            if (item.items) {
-              return (
-                <li key={index}>
-                  <Dropdown
-                    items={item.items}
-                    position="left"
-                    renderItem={(item) => (
-                      <Link
-                        href={item.path || ""}
-                        className="block py-2 px-3 rounded text-black hover:bg-slate-200 transition duration-300 font-normal"
-                      >
-                        {item.label}
-                      </Link>
-                    )}
-                  >
-                    {(isOpen) => (
-                      <div
-                        className={`flex items-center gap-2 hover:underline underline-offset-4`}
-                      >
-                        {item.label}
-                        <ChevronDownIcon
-                          className={`w-6 h-6 duration-200 ${
-                            isOpen ? "-rotate-180" : ""
-                          }`}
-                        />
-                      </div>
-                    )}
-                  </Dropdown>
-                </li>
-              );
-            } else {
-              return (
-                <li key={index} className="">
-                  <Link
-                    href={item.path}
-                    className="block py-2 font-open transition duration-500 hover:underline underline-offset-4"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            }
-          })}
-        </ul> */}
         <div className="flex items-center gap-3">
           {user ? (
             <Dropdown items={dropdownItems} position="right" renderItem={(item) => item}>
               {(isOpen) => (
                 <div className={`relative`}>
-                  <div className="relative w-10 aspect-square rounded-full border border-purple overflow-hidden">
-                    <img src={`${import.meta.env.VITE_API_URL}${user?.picture}` || ""} alt="" className="absolute inset-0 object-cover" />
+                  <div className="flex gap-2 items-center">
+                    <p className="hidden sm:block">{user?.username}</p>
+                    <div className="relative w-10 aspect-square rounded-full border border-purple overflow-hidden">
+                      <img src={`${import.meta.env.VITE_API_URL}${user?.picture}` || ""} alt="" className="absolute inset-0 object-cover" />
+                    </div>
                   </div>
                   {/* {user?.username} */}
                   <i className="absolute bottom-0 right-0 translate-x-1 translate-y-1 flex items-center justify-center size-4 bg-white rounded-full overflow-hidden">

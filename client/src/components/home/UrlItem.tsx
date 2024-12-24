@@ -1,7 +1,7 @@
 import CustomToast from "@/components/CustomToast";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { Url } from "@/types";
-import { ArrowTopRightOnSquareIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/16/solid";
+import { ArrowTopRightOnSquareIcon, LinkIcon, PencilSquareIcon, TrashIcon } from "@heroicons/react/16/solid";
 import { ClipboardIcon } from "@heroicons/react/24/outline";
 import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -45,8 +45,13 @@ export default function UrlItem({ url, setToEdit, setShowEditModal, setToDelete,
   return (
     <div className="px-2 py-2 rounded-lg border border-slate-300">
       <Link target="_blank" to={url.shortenedUrl} className="flex hover:underline">
-        <p className="font-medium text-slate-700">{url.shortenedUrl}</p>
-        <div className="ml-auto">
+        <div className="flex w-0 grow gap-3 items-center">
+          <div className="shrink-0 flex items-center justify-center w-10 h-10 bg-slate-200 border border-slate-300 rounded-lg overflow-hidden">
+            {url.image ? <img src={url.image} alt="" /> : <LinkIcon className="size-8 text-purple" />}
+          </div>
+          <p className="w-0 grow font-medium text-slate-700 text-ellipsis overflow-hidden">{url.shortenedUrl}</p>
+        </div>
+        <div className="">
           <ArrowTopRightOnSquareIcon className="size-4" />
         </div>
       </Link>

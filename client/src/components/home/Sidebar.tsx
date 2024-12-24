@@ -4,6 +4,7 @@ import UrlItem from "@/components/home/UrlItem";
 import { useAppContext } from "@/contexts/AppProvider";
 import { Url } from "@/types";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
+import { XMarkIcon } from "@heroicons/react/16/solid";
 import { ArrowsRightLeftIcon, DocumentCheckIcon, ListBulletIcon, UserIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
@@ -43,7 +44,7 @@ export default function Sidebar({ urls, fetchUrls }: SidebarProps) {
       {/*  ---------------------------- Desktop Sidebar ---------------------------- */}
       <div className="sticky top-[55px] self-start shrink-0 overflow-hidden">
         <div
-          className={` h-[calc(100vh-55px)] w-[350px] bg-white hidden md:block overflow-hidden border border-slate-200 duration-200 ${
+          className={` h-[calc(100vh-55px)] w-[350px] bg-white hidden md:block overflow-hidden border-l border-slate-200 duration-200 ${
             urls?.length ? "" : "mr-[-350px]"
           }`}
         >
@@ -88,13 +89,28 @@ export default function Sidebar({ urls, fetchUrls }: SidebarProps) {
           transition
           className={`fixed md:top-[70px] top-0 right-0 bottom-0 w-full max-w-[400px] bg-white overflow-hidden shadow-[1px_1px_40px_rgb(0,0,0,.2)] duration-200 data-[closed]:translate-x-full`}
         >
-          <div className="h-full flex flex-col px-3 py-6">
+          <div className="relative h-full flex flex-col px-3 py-6">
+            <button
+              onClick={() => {
+                setShowMobileSidebar(false);
+              }}
+              className="absolute top-4 right-4"
+            >
+              <XMarkIcon className="size-8" />
+            </button>
             <h3 className="text-2xl text-center font-bold">Your URLs</h3>
-            <div className="grow overflow-y-auto">
+            <div className="mt-3 grow overflow-y-auto">
               {urls?.length ? (
                 <ul className=" flex flex-col gap-2 mt-4 text-sm">
                   {urls.map((url) => (
-                    <UrlItem key={url._id} url={url} setToEdit={setToEdit} setShowEditModal={setShowEditModal} />
+                    <UrlItem
+                      key={url._id}
+                      url={url}
+                      setToEdit={setToEdit}
+                      setShowEditModal={setShowEditModal}
+                      setToDelete={setToDelete}
+                      setShowDeleteModal={setShowDeleteModal}
+                    />
                   ))}
                 </ul>
               ) : (

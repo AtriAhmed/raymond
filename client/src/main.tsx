@@ -9,6 +9,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Register from "@/pages/Register";
 import AuthLayout from "@/layouts/AuthLayout";
+import NotFound from "@/pages/NotFound";
 
 axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 axios.defaults.withCredentials = true;
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
             element: <Register />,
           },
         ],
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },

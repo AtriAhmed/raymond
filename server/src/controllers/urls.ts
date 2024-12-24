@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+const openGraphScraper = require("open-graph-scraper");
 const Url = require("../models/Url");
 
 // Helper function to generate a random alias
@@ -40,12 +41,31 @@ export const create = async (req: Request, res: Response): Promise<any> => {
       }
     }
 
+    // Fetch Open Graph data
+    let ogImage = null;
+    try {
+      const ogResult = await openGraphScraper({ url });
+      if (ogResult.result.success && ogResult.result.ogImage?.[0]?.url) {
+        let imageUrl = ogResult.result.ogImage?.[0]?.url;
+
+        if (!/^https?:\/\//i.test(imageUrl)) {
+          const baseUrl = new URL(url).origin; // Extract the base URL
+          imageUrl = new URL(imageUrl, baseUrl).href; // Resolve the relative URL
+        }
+
+        ogImage = imageUrl;
+      }
+    } catch (ogError) {
+      console.error("Failed to fetch Open Graph image:", ogError);
+    }
+
     // Create a new shortened URL with the provided or generated alias
     const newUrl = await Url.create({
       url,
       alias: aliasToUse,
       fingerprint: fingerprint || null,
       user: user ? user._id : null,
+      image: ogImage, // Assign fetched image or null
     });
 
     res.status(201).json({
@@ -55,6 +75,7 @@ export const create = async (req: Request, res: Response): Promise<any> => {
         attributes: {
           originalUrl: newUrl.url,
           shortenedUrl: `${process.env.API_URL}/${aliasToUse}`,
+          image: ogImage,
         },
       },
     });
@@ -80,15 +101,7 @@ export const redirect = async (req: Request, res: Response): Promise<any> => {
     const url = await Url.findOne({ alias: id });
 
     if (!url) {
-      return res.status(404).json({
-        errors: [
-          {
-            status: "404",
-            title: "Not Found",
-            detail: "Shortened URL not found.",
-          },
-        ],
-      });
+      return res.redirect(`${process.env.APP_URL}/not-found`);
     }
 
     // Increment the visits count
@@ -139,6 +152,7 @@ export const getUrls = async (req: Request, res: Response): Promise<any> => {
           alias: url.alias,
           visits: url.visits,
           createdAt: url.createdAt,
+          image: url.image,
         },
       })),
     });

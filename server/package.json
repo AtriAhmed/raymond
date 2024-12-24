@@ -27,6 +27,7 @@
     "mysql2": "^2.1.0",
     "nanoid": "^5.0.9",
     "nodemailer": "^6.9.8",
+    "open-graph-scraper": "^6.8.3",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "sequelize": "^6.31.0",

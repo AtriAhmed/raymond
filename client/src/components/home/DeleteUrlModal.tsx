@@ -67,7 +67,7 @@ export default function DeleteUrlModal({ show, hide, afterLeave, fetchUrls, toDe
         </h1>
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
           <div className="flex flex-col">
-            <p className="text-slate-700 font-medium">Would you like to delete the URL?</p>
+            <p className="font-bold">Would you like to delete the URL?</p>
             <p className="mt-1.5 pl-2 text-sm text-slate-700 font-medium">
               <span className="text-black">Short URL:</span> {toDelete?.shortenedUrl}
             </p>
