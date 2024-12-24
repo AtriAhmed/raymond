@@ -4,14 +4,12 @@ import Dropdown from "@/components/Dropdown";
 import { useAppContext } from "@/contexts/AppProvider";
 import { useAuthContext } from "@/contexts/AuthProvider";
 import { Bars3Icon } from "@heroicons/react/16/solid";
-import { ArrowLeftStartOnRectangleIcon, LockClosedIcon, UserIcon } from "@heroicons/react/24/outline";
-import { Link, useLocation } from "react-router-dom";
+import { ArrowLeftStartOnRectangleIcon, LockClosedIcon } from "@heroicons/react/24/outline";
+import { Link } from "react-router-dom";
 
 function Navbar() {
   const { user, logout } = useAuthContext();
   const { setShowMobileSidebar } = useAppContext();
-  const location = useLocation();
-  const pathname = location.pathname;
 
   async function handleLogout() {
     try {
@@ -101,22 +99,3 @@ function ChevronDownIcon({ className }: { className: string }) {
     </svg>
   );
 }
-
-const items = [
-  {
-    label: "Home",
-    path: "/",
-  },
-  {
-    label: "Debt Manager",
-    path: "/app/profile",
-  },
-  {
-    label: "Expenses",
-    path: "/expenses",
-  },
-  {
-    label: "Profile",
-    path: "/app/profile",
-  },
-];

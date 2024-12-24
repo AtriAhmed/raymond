@@ -10,7 +10,6 @@ export default function Home() {
   const { fingerprint } = useAuthContext();
   const [urls, setUrls] = useState<Url[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const { user } = useAuthContext();
 
   console.log("-------------------- urls --------------------");
   console.log(urls);

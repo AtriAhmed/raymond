@@ -5,12 +5,7 @@ const router = Router();
 
 const limiter = require("../middleWares/rateLimiter");
 
-// Matches with "/api/user"
-router
-  .route("/urls")
-  // POST "/api/user" Example Request: { "vals": ["test_user", "111111", 1] }
-  .post(limiter(20), urlsController.create) // create a new user
-  .get(limiter(), urlsController.getUrls);
+router.route("/urls").post(limiter(20), urlsController.create).get(limiter(), urlsController.getUrls);
 
 router.route("/urls/:id").put(urlsController.update).delete(urlsController.deleteUrl);
 

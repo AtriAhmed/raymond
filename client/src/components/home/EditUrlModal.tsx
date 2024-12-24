@@ -120,7 +120,7 @@ export default function EditUrlModal({ show, hide, afterLeave, fetchUrls, toEdit
                 {...restRegister}
                 placeholder="https://example.com"
                 className="w-full mt-1 px-4 py-2 text-sm border rounded-lg shadow-sm focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none border-gray-300 duration-200"
-                ref={(e) => {
+                ref={(e: any) => {
                   ref(e);
                   inputRef.current = e;
                 }}

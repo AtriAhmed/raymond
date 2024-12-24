@@ -3,7 +3,6 @@ import { Response } from "express";
 const router = require("express").Router();
 const authRoute = require("./auth");
 const usersRoute = require("./users");
-const accessLevelRoute = require("./accessLevels");
 const urlsRoute = require("./urls");
 
 // login route for Users
@@ -11,9 +10,6 @@ router.use("/auth", authRoute);
 
 // '/api/user' for all routes involving User Accounts
 router.use("/users", usersRoute);
-
-// '/api/accessLevels' for all routes involving Access Levels
-router.use("/accessLevels", accessLevelRoute);
 
 router.use("/", urlsRoute);
 

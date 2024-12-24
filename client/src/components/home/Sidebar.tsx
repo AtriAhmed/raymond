@@ -5,7 +5,6 @@ import { useAppContext } from "@/contexts/AppProvider";
 import { Url } from "@/types";
 import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/16/solid";
-import { ArrowsRightLeftIcon, DocumentCheckIcon, ListBulletIcon, UserIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
 
 type SidebarProps = {
@@ -123,33 +122,3 @@ export default function Sidebar({ urls, fetchUrls }: SidebarProps) {
     </>
   );
 }
-
-const items1 = [
-  // {
-  //   name: "Dashboard",
-  //   Icon: <HomeIcon className="size-5" />,
-  //   path: "/app",
-  //   strict: true,
-  // },
-  {
-    name: "Debt Manager",
-    Icon: <DocumentCheckIcon className="size-5" />,
-    path: "/app/debt-manager",
-  },
-  {
-    name: "Transactions",
-    Icon: <ArrowsRightLeftIcon className="size-5" />,
-    path: "/app/transactions",
-  },
-  {
-    name: "Contacts",
-    Icon: <ListBulletIcon className="size-5" />,
-    path: "/app/contacts",
-  },
-  {
-    name: "Profile",
-    // Icon: <Doctor02Icon className="size-5" />,
-    Icon: <UserIcon className="size-5" />,
-    path: "/app/profile",
-  },
-];
