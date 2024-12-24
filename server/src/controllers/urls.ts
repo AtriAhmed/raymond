@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 const openGraphScraper = require("open-graph-scraper");
 const Url = require("../models/Url");
+import { z } from "zod";
 
 // Helper function to generate a random alias
 const generateAlias = (): string => {
@@ -16,7 +17,56 @@ const generateUniqueAlias = async (): Promise<string> => {
   return alias;
 };
 
+// Define schemas
+const createSchema = z.object({
+  url: z
+    .string()
+    .url("Please enter a valid URL")
+    .refine(
+      (val) => {
+        const parts = val.split(".");
+        return parts.length >= 2 && parts[0].length >= 2 && parts[parts.length - 1].length >= 2;
+      },
+      { message: "Please enter a valid URL" }
+    ),
+  alias: z
+    .string()
+    .optional()
+    .refine((val) => !val || /^[a-zA-Z0-9_-]+$/.test(val), {
+      message: "Alias can only contain letters, numbers, underscores, and dashes",
+    }),
+  fingerprint: z.string().optional(),
+});
+
+const redirectSchema = z.object({
+  id: z.string(),
+});
+
+const getUrlsSchema = z.object({
+  fingerprint: z.string().optional(),
+});
+
+const updateSchema = z.object({
+  url: z.string().url().optional(),
+  alias: z.string().optional(),
+});
+
+const deleteSchema = z.object({
+  id: z.string(),
+});
+
 export const create = async (req: Request, res: Response): Promise<any> => {
+  const validation = createSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({
+      errors: validation.error.errors.map((error) => ({
+        status: "400",
+        title: "Validation Error",
+        detail: error.message,
+        source: { pointer: error.path.join(".") },
+      })),
+    });
+  }
   const { url, alias, fingerprint } = req.body;
 
   const user = req.user;
@@ -94,6 +144,17 @@ export const create = async (req: Request, res: Response): Promise<any> => {
 };
 
 export const redirect = async (req: Request, res: Response): Promise<any> => {
+  const validation = redirectSchema.safeParse(req.params);
+  if (!validation.success) {
+    return res.status(400).json({
+      errors: validation.error.errors.map((error) => ({
+        status: "400",
+        title: "Validation Error",
+        detail: error.message,
+        source: { pointer: error.path.join(".") },
+      })),
+    });
+  }
   const { id } = req.params;
 
   try {
@@ -125,6 +186,17 @@ export const redirect = async (req: Request, res: Response): Promise<any> => {
 };
 
 export const getUrls = async (req: Request, res: Response): Promise<any> => {
+  const validation = getUrlsSchema.safeParse(req.query);
+  if (!validation.success) {
+    return res.status(400).json({
+      errors: validation.error.errors.map((error) => ({
+        status: "400",
+        title: "Validation Error",
+        detail: error.message,
+        source: { pointer: error.path.join(".") },
+      })),
+    });
+  }
   const { fingerprint } = req.query;
   const user = req.user; // Assuming `req.user` contains the authenticated user information
 
@@ -172,6 +244,17 @@ export const getUrls = async (req: Request, res: Response): Promise<any> => {
 
 // Update route
 export const update = async (req: Request, res: Response): Promise<any> => {
+  const validation = updateSchema.safeParse(req.body);
+  if (!validation.success) {
+    return res.status(400).json({
+      errors: validation.error.errors.map((error) => ({
+        status: "400",
+        title: "Validation Error",
+        detail: error.message,
+        source: { pointer: error.path.join(".") },
+      })),
+    });
+  }
   const { id } = req.params; // The ID of the URL document to update
   const { url, alias } = req.body;
 
@@ -241,6 +324,17 @@ export const update = async (req: Request, res: Response): Promise<any> => {
 };
 
 export const deleteUrl = async (req: Request, res: Response): Promise<any> => {
+  const validation = deleteSchema.safeParse(req.params);
+  if (!validation.success) {
+    return res.status(400).json({
+      errors: validation.error.errors.map((error) => ({
+        status: "400",
+        title: "Validation Error",
+        detail: error.message,
+        source: { pointer: error.path.join(".") },
+      })),
+    });
+  }
   const { id } = req.params; // The ID of the URL document to delete
   const user = req.user; // Assuming `req.user` is populated with the authenticated user
 

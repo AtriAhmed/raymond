@@ -14,7 +14,7 @@ module.exports = (passport: any) => {
   // used to deserialize the user
 
   passport.deserializeUser(async (id: any, done: any) => {
-    const user = await User.findById(id);
+    const user = await User.findById(id, "-password");
 
     if (user) {
       done(null, user.toJSON());
