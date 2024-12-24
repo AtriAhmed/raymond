@@ -4,6 +4,25 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .scrollbar::-webkit-scrollbar-track {
+    background: #eee;
+    border-radius: 20px;
+  }
+  .scrollbar::-webkit-scrollbar {
+    width: 8px;
+    height: 4px;
+  }
+  .scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #bbb;
+    border-radius: 20px;
+  }
+  .scrollbar::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 20px;
+  }
+}
+
 .ring-loader {
   width: 20px;
   height: 20px;
@@ -62,11 +81,5 @@
 
   100% {
     transform: scale(0.8);
-  }
-}
-
-@layer base {
-  :root {
-    --radius: 0.5rem;
   }
 }
