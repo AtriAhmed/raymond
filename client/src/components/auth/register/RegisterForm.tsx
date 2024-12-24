@@ -1,11 +1,9 @@
 import { RingLoader } from "@/components/Loader";
-import { useAuthContext } from "@/contexts/AuthProvider";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
 import * as z from "zod";
 
 const schema = z
@@ -28,10 +26,7 @@ type RegisterFormProps = {
   setVerificationToken: (token: string) => void;
 };
 
-export default function RegisterForm({ verificationToken, setVerificationToken }: RegisterFormProps) {
-  const navigate = useNavigate();
-  const { fetchUser } = useAuthContext();
-
+export default function RegisterForm({ setVerificationToken }: RegisterFormProps) {
   const {
     register,
     handleSubmit,
@@ -49,7 +44,6 @@ export default function RegisterForm({ verificationToken, setVerificationToken }
       setVerificationToken(res.data.data.attributes.token);
     } catch (err: any) {
       const msg = err.response?.data?.errors?.[0]?.detail;
-      console.log(err);
       if (msg === "EmailAlreadyExists") {
         setError("apiError", {
           type: "manual",

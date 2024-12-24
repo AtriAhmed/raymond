@@ -37,18 +37,14 @@ function AuthProvider({ children }: AuthProviderProps) {
     try {
       const res = await axios.get("/auth/status");
       setUser(res.data.user);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }
 
   async function logout() {
     try {
       await axios.post("/auth/logout");
       setUser(null);
-    } catch (err) {
-      console.log(err);
-    }
+    } catch (err) {}
   }
 
   useEffect(() => {

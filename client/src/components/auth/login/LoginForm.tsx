@@ -35,10 +35,7 @@ export default function LoginForm() {
 
       fetchUser();
     } catch (err: any) {
-      console.log("-------------------- err.response?.data --------------------");
-      console.log(err.response?.data);
       const msg = err.response?.data?.errors?.[0]?.detail;
-      console.log(err);
       if (msg === "EmailAlreadyExists") {
         setError("apiError", {
           type: "manual",

@@ -24,20 +24,6 @@ const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: "chat",
-        // element: <ChatLayout />,
-        children: [
-          {
-            index: true,
-            // element: <NoSelectedChat />,
-          },
-          {
-            path: ":id",
-            // element: <Chat />,
-          },
-        ],
-      },
-      {
         path: "auth",
         element: <AuthLayout />,
         children: [

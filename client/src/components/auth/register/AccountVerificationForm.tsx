@@ -1,13 +1,10 @@
 import { RingLoader } from "@/components/Loader";
 import { useAuthContext } from "@/contexts/AuthProvider";
-import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import * as z from "zod";
 import OtpInput from "react-otp-input";
+import * as z from "zod";
 
 const schema = z.object({
   otp: z.string().min(6, "Confirm Password must be at least 6 characters"),
@@ -22,8 +19,7 @@ type AccountVerificationFormProps = {
   setVerificationToken: (token: string) => void;
 };
 
-export default function AccountVerificationForm({ verificationToken, setVerificationToken }: AccountVerificationFormProps) {
-  const navigate = useNavigate();
+export default function AccountVerificationForm({ verificationToken }: AccountVerificationFormProps) {
   const { fetchUser } = useAuthContext();
 
   const {
@@ -45,12 +41,11 @@ export default function AccountVerificationForm({ verificationToken, setVerifica
     };
 
     try {
-      const res = await axios.put("/users/verify", payload);
+      await axios.put("/users/verify", payload);
 
       fetchUser();
     } catch (err: any) {
       const msg = err.response?.data?.errors?.[0]?.detail;
-      console.log(err);
       if (msg === "EmailAlreadyExists") {
         setError("apiError", {
           type: "manual",

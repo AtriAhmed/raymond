@@ -11,9 +11,6 @@ export default function Home() {
   const [urls, setUrls] = useState<Url[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  console.log("-------------------- urls --------------------");
-  console.log(urls);
-
   async function fetchUrls() {
     try {
       const res = await axios.get("/urls", {
@@ -32,7 +29,6 @@ export default function Home() {
 
       setUrls(data);
     } catch (err) {
-      console.log(err);
     } finally {
       setLoading(false);
     }
