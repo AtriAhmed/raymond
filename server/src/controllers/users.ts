@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
@@ -7,15 +7,6 @@ const nodemailer = require("nodemailer");
 const TempAccount = require("../models/TempAccount");
 
 const saltRounds = 10;
-
-const { check, body, validationResult } = require("express-validator");
-
-function removeSpaces(req: any, res: Response, next: NextFunction) {
-  if (req.files?.image) {
-    req.files.image.name = req.files.image.name.replace(/\s/g, "");
-  }
-  next();
-}
 
 export async function create(req: Request, res: Response) {
   const body = req.body;
