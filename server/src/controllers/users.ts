@@ -40,7 +40,7 @@ export async function create(req: Request, res: Response) {
       });
     } else {
       console.log("-------------------- here --------------------");
-      const emailBody = verificationEmailBody("Mr/Mme,", otp, "1 heure");
+      const emailBody = verificationEmailBody("Mr/Mrs", otp, "1 heure");
       await sendMail("URLShortener verification code", emailBody, body.email);
 
       user = await TempAccount.create(userData);
@@ -128,7 +128,7 @@ export async function verify(req: Request, res: Response) {
 
     user = await User.create(userData);
 
-    const emailBody = welcomeEmailBody("Mr/Mme,");
+    const emailBody = welcomeEmailBody("Mr/Mrs");
     await sendMail("Welcome to URLShortener", emailBody, tempUser.email);
 
     await TempAccount.findByIdAndDelete(tempUser._id);
@@ -201,182 +201,156 @@ async function sendMail(subject: string, body: string, email: string) {
   }
 }
 
-function verificationEmailBody(name: string, code: string, expiration: string) {
+function verificationEmailBody(name:string, code:string, expiration:string) {
   return `
-  <!DOCTYPEhtml>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+  <!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title></title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Verification</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
     <style>
-      html,
       body {
-        margin: 0 auto !important;
-        padding: 0 !important;
-        height: 100% !important;
-        width: 100% !important;
-        font-family: "Poppins", sans-serif !important;
-        font-size: 14px;
-        margin-bottom: 10px;
-        line-height: 24px;
-        color: white;
-        font-weight: 400;
-      }
-
-      * {
-        -ms-text-size-adjust: 100%;
-        -webkit-text-size-adjust: 100%;
         margin: 0;
         padding: 0;
-        font-family: "Poppins", sans-serif !important;
+        font-family: "Poppins", sans-serif;
+        background: #f4f4f4;
+        color: #333;
       }
-
-      a {
-        text-decoration: none;
-      }
-
-      img {
-        -ms-interpolation-mode: bicubic;
-      }
-
       .container {
-        background: linear-gradient(50deg, #8a21ed 0%, #690fbd 100%, #8a21ed 100%);
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
-
-      .code {
-        padding: 5px 10px;
-        margin-inline: 10px;
-        border-radius: 5px;
-        background:rgb(103, 12, 188);
-        color: white;
-        font-weight: bold;
+      .header {
+        text-align: center;
+        padding: 20px 0;
+      }
+      .header h1 {
+        color: #8a21ed;
+        margin: 0;
+      }
+      .content {
+        padding: 20px;
         font-size: 16px;
+        line-height: 1.6;
+      }
+      .code {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 10px 0;
+        background: #8a21ed;
+        color: #fff;
+        font-weight: bold;
+        border-radius: 5px;
+        font-size: 18px;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 12px;
+        color: #666;
       }
     </style>
   </head>
-
-  <body width="100%" style="margin: 0; padding: 0 !important">
-    <div style="width: 100%" class="container">
-      <div style="max-width: 600px; width: 100%; margin: auto; padding: 40px 0">
-
-        <div class="width:100%; max-width:600px; margin:0 auto;">
-          <div style="text-align: center; padding: 30px 30px 20px">
-            <h5 style="margin-bottom: 24px; color: white; font-size: 20px; font-weight: 400; line-height: 28px; text-transform: capitalize">
-              Hello ${name},
-            </h5>
-            <p style="margin-bottom: 10px; color: white; font-size: 16px">
-              Thank you for registering with our service. To complete your registration process, please enter the following verification code:
-            </p>
-            <p style="margin-bottom: 10px; color: white">Verification Code: <span class="code">${code}</span></p>
-            <p style="margin-bottom: 10px; color: white">Enter this code on the registration page to validate your account.</p>
-            <p style="margin-bottom: 10px; color: white">
-              Best regards,<br />
-              URLShortener Team
-            </p>
-          </div>
-        </div>
-        <div style="width: 100%; max-width: 620px; margin: 0 auto">
-          <div style="text-align: center; padding: 20px 20px 0">
-            <p style="font-size: 13px; color:white;">Copyright © 2024 URLShortener. All rights reserved.</p>
-          </div>
-        </div>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Welcome to URLShortener</h1>
+      </div>
+      <div class="content">
+        <p>Hi ${name},</p>
+        <p>
+          Thank you for joining URLShortener! To complete your registration, please use the
+          following verification code:
+        </p>
+        <div class="code">${code}</div>
+        <p>This code will expire in <strong>${expiration}</strong>.</p>
+        <p>
+          If you did not sign up for this service, please ignore this email or contact support.
+        </p>
+        <p>Best regards,<br />The URLShortener Team</p>
+      </div>
+      <div class="footer">
+        <p>&copy; 2024 URLShortener. All rights reserved.</p>
       </div>
     </div>
   </body>
 </html>
-
-
   `;
 }
 
-function welcomeEmailBody(name: string) {
+
+function welcomeEmailBody(name:string) {
   return `
-  <!DOCTYPEhtml>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+  <!DOCTYPE html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
-    <title></title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome Email</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
     <style>
-      html,
       body {
-        margin: 0 auto !important;
-        padding: 0 !important;
-        height: 100% !important;
-        width: 100% !important;
-        font-family: "Poppins", sans-serif !important;
-        font-size: 14px;
-        margin-bottom: 10px;
-        line-height: 24px;
-        color: white;
-        font-weight: 400;
-      }
-
-      * {
-        -ms-text-size-adjust: 100%;
-        -webkit-text-size-adjust: 100%;
         margin: 0;
         padding: 0;
-        font-family: "Poppins", sans-serif !important;
+        font-family: "Poppins", sans-serif;
+        background: #f4f4f4;
+        color: #333;
       }
-
-      a {
-        text-decoration: none;
-      }
-
-      img {
-        -ms-interpolation-mode: bicubic;
-      }
-
       .container {
-        background: linear-gradient(50deg, #8a21ed 0%, #690fbd 100%, #8a21ed 100%);
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
       }
-
-      .code {
-        padding: 5px 10px;
-        margin-inline: 10px;
-        border-radius: 5px;
-        background:rgb(103, 12, 188);
-        color: white;
-        font-weight: bold;
+      .header {
+        text-align: center;
+        padding: 20px 0;
+      }
+      .header h1 {
+        color: #8a21ed;
+        margin: 0;
+      }
+      .content {
+        padding: 20px;
         font-size: 16px;
+        line-height: 1.6;
+      }
+      .footer {
+        text-align: center;
+        padding: 20px;
+        font-size: 12px;
+        color: #666;
       }
     </style>
   </head>
-
-  <body width="100%" style="margin: 0; padding: 0 !important">
-    <div style="width: 100%" class="container">
-      <div style="max-width: 600px; width: 100%; margin: auto; padding: 40px 0">
-
-        <div class="width:100%; max-width:600px; margin:0 auto;">
-          <div style="text-align: center; padding: 30px 30px 20px">
-            <h5 style="margin-bottom: 24px; color: white; font-size: 20px; font-weight: 400; line-height: 28px; text-transform: capitalize">
-              Hello ${name},
-            </h5>
-            <p style="margin-bottom: 10px; color: white; font-size: 16px">
-              Welcome to URLShortener. We are excited to have you on board.
-            </p>
-            <p style="margin-bottom: 10px; color: white">
-              Best regards,<br />
-              URLShortener Team
-            </p>
-          </div>
-        </div>
-        <div style="width: 100%; max-width: 620px; margin: 0 auto">
-          <div style="text-align: center; padding: 20px 20px 0">
-            <p style="font-size: 13px; color:white;">Copyright © 2024 رعاية. All rights reserved.</p>
-          </div>
-        </div>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Welcome to URLShortener</h1>
+      </div>
+      <div class="content">
+        <p>Hi ${name},</p>
+        <p>
+          We're thrilled to have you on board! With URLShortener, you can easily create and manage shortened URLs, track analytics, and much more.
+        </p>
+        <p>
+          Explore your dashboard to get started. If you have any questions, feel free to reach out to our support team.
+        </p>
+        <p>Best regards,<br />The URLShortener Team</p>
+      </div>
+      <div class="footer">
+        <p>&copy; 2024 URLShortener. All rights reserved.</p>
       </div>
     </div>
   </body>
 </html>
-
-
   `;
 }
