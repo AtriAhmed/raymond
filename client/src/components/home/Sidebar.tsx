@@ -1,3 +1,4 @@
+import DeleteUrlModal from "@/components/home/DeleteUrlModal";
 import EditUrlModal from "@/components/home/EditUrlModal";
 import UrlItem from "@/components/home/UrlItem";
 import { useAppContext } from "@/contexts/AppProvider";
@@ -14,7 +15,9 @@ type SidebarProps = {
 export default function Sidebar({ urls, fetchUrls }: SidebarProps) {
   const { showMobileSidebar, setShowMobileSidebar, isMobile } = useAppContext();
   const [toEdit, setToEdit] = useState<Url | null>(null);
+  const [toDelete, setToDelete] = useState<Url | null>(null);
   const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
   return (
     <>
@@ -26,6 +29,15 @@ export default function Sidebar({ urls, fetchUrls }: SidebarProps) {
         }}
         fetchUrls={fetchUrls}
         toEdit={toEdit}
+      />
+      <DeleteUrlModal
+        show={showDeleteModal}
+        hide={() => {
+          setShowDeleteModal(false);
+          setToEdit(null);
+        }}
+        fetchUrls={fetchUrls}
+        toDelete={toDelete}
       />
       {/*  ---------------------------- Desktop Sidebar ---------------------------- */}
       {/*  ---------------------------- Desktop Sidebar ---------------------------- */}
@@ -41,7 +53,14 @@ export default function Sidebar({ urls, fetchUrls }: SidebarProps) {
               {urls?.length ? (
                 <ul className=" flex flex-col gap-2 mt-4 text-sm">
                   {urls.map((url) => (
-                    <UrlItem key={url._id} url={url} setToEdit={setToEdit} setShowEditModal={setShowEditModal} />
+                    <UrlItem
+                      key={url._id}
+                      url={url}
+                      setToEdit={setToEdit}
+                      setShowEditModal={setShowEditModal}
+                      setToDelete={setToDelete}
+                      setShowDeleteModal={setShowDeleteModal}
+                    />
                   ))}
                 </ul>
               ) : (
@@ -67,12 +86,22 @@ export default function Sidebar({ urls, fetchUrls }: SidebarProps) {
         {/* The actual dialog panel  */}
         <DialogPanel
           transition
-          className={`fixed md:top-[70px] top-0 right-0 bottom-0 w-full max-w-[280px] bg-white overflow-hidden shadow-[1px_1px_40px_rgb(0,0,0,.2)] duration-200 data-[closed]:translate-x-full`}
+          className={`fixed md:top-[70px] top-0 right-0 bottom-0 w-full max-w-[400px] bg-white overflow-hidden shadow-[1px_1px_40px_rgb(0,0,0,.2)] duration-200 data-[closed]:translate-x-full`}
         >
-          {/*  ---------------------------- Start Sidebar Content ---------------------------- */}
-          {/*  ---------------------------- Start Sidebar Content ---------------------------- */}
-          {/*  ---------------------------- Start Sidebar Content ---------------------------- */}
-          {/*  ---------------------------- Start Sidebar Content ---------------------------- */}
+          <div className="h-full flex flex-col px-3 py-6">
+            <h3 className="text-2xl text-center font-bold">Your URLs</h3>
+            <div className="grow overflow-y-auto">
+              {urls?.length ? (
+                <ul className=" flex flex-col gap-2 mt-4 text-sm">
+                  {urls.map((url) => (
+                    <UrlItem key={url._id} url={url} setToEdit={setToEdit} setShowEditModal={setShowEditModal} />
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-6 text-center font-semibold text-xl text-slate-700">You have no shortened URLs</p>
+              )}
+            </div>
+          </div>
         </DialogPanel>
       </Dialog>
     </>

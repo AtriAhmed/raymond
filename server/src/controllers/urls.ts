@@ -225,3 +225,62 @@ export const update = async (req: Request, res: Response): Promise<any> => {
     });
   }
 };
+
+export const deleteUrl = async (req: Request, res: Response): Promise<any> => {
+  const { id } = req.params; // The ID of the URL document to delete
+  const user = req.user; // Assuming `req.user` is populated with the authenticated user
+
+  try {
+    // Find the URL by ID
+    const url = await Url.findById(id);
+
+    if (!url) {
+      return res.status(404).json({
+        errors: [
+          {
+            status: "404",
+            title: "Not Found",
+            detail: `The URL with ID '${id}' was not found.`,
+          },
+        ],
+      });
+    }
+
+    // Check if the authenticated user is the creator of the URL
+    if (url.user?.toString() !== user._id.toString()) {
+      return res.status(403).json({
+        errors: [
+          {
+            status: "403",
+            title: "Forbidden",
+            detail: "You are not authorized to delete this URL.",
+          },
+        ],
+      });
+    }
+
+    // Delete the URL
+    await url.deleteOne();
+
+    return res.status(200).json({
+      data: {
+        type: "shortUrl",
+        id: url._id,
+        attributes: {
+          message: "The URL has been successfully deleted.",
+        },
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      errors: [
+        {
+          status: "500",
+          title: "Internal Server Error",
+          detail: "Something went wrong while deleting the URL.",
+        },
+      ],
+    });
+  }
+};

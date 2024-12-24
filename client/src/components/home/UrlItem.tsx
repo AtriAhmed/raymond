@@ -10,9 +10,11 @@ type UrlItemProps = {
   url: Url;
   setToEdit: (url: Url) => void;
   setShowEditModal: (show: boolean) => void;
+  setToDelete: (url: Url) => void;
+  setShowDeleteModal: (show: boolean) => void;
 };
 
-export default function UrlItem({ url, setToEdit, setShowEditModal }: UrlItemProps) {
+export default function UrlItem({ url, setToEdit, setShowEditModal, setToDelete, setShowDeleteModal }: UrlItemProps) {
   const { user } = useAuthContext();
 
   async function handleCopy() {
@@ -35,6 +37,9 @@ export default function UrlItem({ url, setToEdit, setShowEditModal }: UrlItemPro
     if (!user) {
       return toast.custom((t) => <CustomToast t={t} type="warning" message={"Log in to edit your URLs"} />);
     }
+
+    setToDelete(url);
+    setShowDeleteModal(true);
   }
 
   return (
@@ -65,7 +70,7 @@ export default function UrlItem({ url, setToEdit, setShowEditModal }: UrlItemPro
         </p>
       </div>
       <div className="flex gap-1 mt-3">
-        <button onClick={handleCopy} className="flex gap-1 px-2 py-1 rounded bg-green-600 hover:bg-green-700 text-white duration-200">
+        <button onClick={handleCopy} className="flex gap-1 px-2 py-1 rounded bg-slate-400 hover:bg-slate-500 text-white duration-200">
           <ClipboardIcon className="size-4" />
           <p className="text-xs">Copy</p>
         </button>

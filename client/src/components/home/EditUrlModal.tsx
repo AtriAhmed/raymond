@@ -145,7 +145,7 @@ export default function EditUrlModal({ show, hide, afterLeave, fetchUrls, toEdit
             </div>
             <button
               type="submit"
-              className="flex items-center justify-center h-[40px] px-4 py-2 text-white rounded-lg shadow bg-purple hover:bg-purple-dark focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
+              className="flex items-center justify-center h-[40px] !mt-8 px-4 py-2 text-white rounded-lg shadow bg-purple hover:bg-purple-dark focus:ring-1 ring-offset-1 focus:ring-purple-700 focus:outline-none duration-200"
               disabled={isSubmitting}
             >
               {isSubmitting ? (

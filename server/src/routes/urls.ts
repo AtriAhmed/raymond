@@ -12,7 +12,7 @@ router
   .post(limiter(20), urlsController.create) // create a new user
   .get(limiter(), urlsController.getUrls);
 
-router.route("/urls/:id").put(urlsController.update);
+router.route("/urls/:id").put(urlsController.update).delete(urlsController.deleteUrl);
 
 router.route("/:id").get(urlsController.redirect);
 
