@@ -3,7 +3,7 @@ import * as urlsController from "../controllers/urls";
 
 const router = Router();
 
-const limiter = require("../middleWares/rateLimiter");
+const limiter = require("../middlewares/rateLimiter");
 
 router.route("/urls").post(limiter(20), urlsController.create).get(limiter(), urlsController.getUrls);
 
