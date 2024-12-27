@@ -2,11 +2,12 @@
   "name": "passportmern",
   "version": "1.0.1",
   "description": "backend part of authentication made with passport js local strategy and MERN technology (M for mysql)",
-  "main": "server.ts",
+  "main": "src/server.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.ts",
-    "dev": "nodemon server.ts"
+    "dev": "nodemon -L src/server.ts",
+    "build": "tsc"
   },
   "dependencies": {
     "bcrypt": "^5.0.0",

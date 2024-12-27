@@ -3,16 +3,15 @@ import { Response } from "express";
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const routes = require("./src/routes/index.ts");
+const routes = require("./routes/index");
 const fileUpload = require("express-fileupload");
 
-require("./src/config/mongooseConnect");
+require("./config/mongooseConnect");
 
 const passport = require("passport");
-require("./src/config/passportConfig")(passport); // pass passport for configuration
+require("./config/passportConfig")(passport); // pass passport for configuration
 
 const session = require("express-session");
-// const sessionStore = require("./src/config/promiseConnection");
 
 const MongoStore = require("connect-mongo");
 
