@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 const openGraphScraper = require("open-graph-scraper");
 const Url = require("../models/Url");
 import { z } from "zod";
+const mongoose = require("mongoose");
 
 // Helper function to generate a random alias
 const generateAlias = (): string => {
@@ -52,7 +53,9 @@ const updateSchema = z.object({
 });
 
 const deleteSchema = z.object({
-  id: z.string(),
+  id: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: "Invalid ObjectId",
+  }),
 });
 
 export const create = async (req: Request, res: Response): Promise<any> => {
