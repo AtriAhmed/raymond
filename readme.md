@@ -1,6 +1,6 @@
-# Backend Setup Instructions
+# Setup Instructions
 
-This guide explains how to run the backend of the project using Docker. Both development and production environments are covered.
+This guide explains how to run both the backend and frontend of the project using Docker. Both development and production environments are covered.
 
 ## Prerequisites
 
@@ -11,43 +11,49 @@ Ensure you have the following installed:
 
 ## Development
 
-1. Build the development image with Docker Compose:
+1. Navigate to the `server` folder for backend or `client` folder for frontend.
+
+2. Build the development image with Docker Compose:
 
    ```bash
    docker-compose -f docker-compose.dev.yml build
    ```
 
-2. Start the development container:
+3. Start the development container:
 
    ```bash
    docker-compose -f docker-compose.dev.yml up
    ```
 
-3. Start the development container with automatic build:
+   Alternatively, you can combine the above two steps into one:
+
    ```bash
    docker-compose -f docker-compose.dev.yml up --build
    ```
 
 ## Production
 
-1. Build the production image with Docker Compose:
+1. Navigate to the `server` folder for backend or `client` folder for frontend.
+
+2. Build the production image with Docker Compose:
 
    ```bash
    docker-compose -f docker-compose.prod.yml build
    ```
 
-2. Start the production container:
+3. Start the production container:
 
    ```bash
    docker-compose -f docker-compose.prod.yml up -d
    ```
 
-3. Start the production container with automatic build:
+   Alternatively, you can combine the above two steps into one:
+
    ```bash
    docker-compose -f docker-compose.prod.yml up --build -d
    ```
 
 ## Notes
 
-- The backend and frontend are in the same repository. These instructions apply to the backend only.
+- The backend and frontend are in the same repository. These instructions apply to both backend and frontend.
 - Adjust `.env` files as needed for your environment.
