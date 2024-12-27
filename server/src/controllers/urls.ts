@@ -40,7 +40,9 @@ const createSchema = z.object({
 });
 
 const redirectSchema = z.object({
-  id: z.string(),
+  id: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: "Invalid ObjectId",
+  }),
 });
 
 const getUrlsSchema = z.object({
@@ -175,6 +177,7 @@ export const redirect = async (req: Request, res: Response): Promise<any> => {
     // Redirect to the original URL
     res.redirect(url.url);
   } catch (error) {
+    return res.redirect(`${process.env.APP_URL}/not-found`);
     console.error(error);
     res.status(500).json({
       errors: [
