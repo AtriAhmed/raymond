@@ -168,7 +168,7 @@ export async function verify(req: Request, res: Response) {
 
     await TempAccount.findByIdAndDelete(tempUser._id);
 
-    req.logIn(user, (err: any) => {
+    req.logIn?.(user, (err: any) => {
       if (err) {
         return res.status(500).json({
           errors: [

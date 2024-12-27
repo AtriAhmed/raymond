@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 const openGraphScraper = require("open-graph-scraper");
 const Url = require("../models/Url");
 import { z } from "zod";
+const mongoose = require("mongoose");
 
 // Helper function to generate a random alias
 const generateAlias = (): string => {
@@ -39,7 +40,9 @@ const createSchema = z.object({
 });
 
 const redirectSchema = z.object({
-  id: z.string(),
+  id: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: "Invalid ObjectId",
+  }),
 });
 
 const getUrlsSchema = z.object({
@@ -52,7 +55,9 @@ const updateSchema = z.object({
 });
 
 const deleteSchema = z.object({
-  id: z.string(),
+  id: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
+    message: "Invalid ObjectId",
+  }),
 });
 
 export const create = async (req: Request, res: Response): Promise<any> => {
@@ -172,6 +177,7 @@ export const redirect = async (req: Request, res: Response): Promise<any> => {
     // Redirect to the original URL
     res.redirect(url.url);
   } catch (error) {
+    return res.redirect(`${process.env.APP_URL}/not-found`);
     console.error(error);
     res.status(500).json({
       errors: [
