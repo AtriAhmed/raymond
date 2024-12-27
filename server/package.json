@@ -1,11 +1,11 @@
 {
-  "name": "passportmern",
-  "version": "1.0.1",
-  "description": "backend part of authentication made with passport js local strategy and MERN technology (M for mysql)",
+  "name": "url-shortener-api",
+  "version": "1.0.0",
+  "description": "A URL shortener API built with Node.js, Express, and MongoDB",
   "main": "src/server.ts",
   "scripts": {
-    "test": "jest --verbose",
-    "start": "node server.ts",
+    "test": "jest --verbose src",
+    "start": "node dist/server.js",
     "dev": "nodemon -L src/server.ts",
     "build": "tsc"
   },

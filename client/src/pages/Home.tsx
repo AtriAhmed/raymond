@@ -10,6 +10,7 @@ export default function Home() {
   const { fingerprint } = useAuthContext();
   const [urls, setUrls] = useState<Url[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const { user } = useAuthContext();
 
   async function fetchUrls() {
     try {
@@ -36,7 +37,7 @@ export default function Home() {
 
   useEffect(() => {
     fetchUrls();
-  }, []);
+  }, [user]);
 
   if (loading) {
     return (

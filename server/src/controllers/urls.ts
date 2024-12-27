@@ -40,9 +40,7 @@ const createSchema = z.object({
 });
 
 const redirectSchema = z.object({
-  id: z.string().refine((val) => mongoose.Types.ObjectId.isValid(val), {
-    message: "Invalid ObjectId",
-  }),
+  id: z.string(),
 });
 
 const getUrlsSchema = z.object({

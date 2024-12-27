@@ -5,6 +5,7 @@ const express = require("express");
 const app = express();
 const routes = require("./routes/index");
 const fileUpload = require("express-fileupload");
+const path = require("path");
 
 require("./config/mongooseConnect");
 
@@ -19,7 +20,7 @@ const PORT = process.env.PORT;
 const cors = require("cors");
 var corsOptions = {
   credentials: true,
-  origin: ["http://localhost:3000", "http://localhost:5173"],
+  origin: [process.env.APP_URL],
 };
 
 const mongoose = require("mongoose");
@@ -27,7 +28,7 @@ const mongoose = require("mongoose");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(fileUpload());
-app.use(express.static(__dirname + "/public"));
+app.use(express.static(path.join(__dirname, "../public")));
 app.use(cors(corsOptions));
 app.use(
   session({
